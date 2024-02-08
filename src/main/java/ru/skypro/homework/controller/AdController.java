@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.skypro.homework.dto.AdsDto;
 import ru.skypro.homework.dto.CreateOrUpdateAdDto;
-import ru.skypro.homework.entity.Ad;
+import ru.skypro.homework.model.Ad;
 
 
 import java.util.Collection;
