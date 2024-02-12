@@ -1,11 +1,17 @@
 package ru.skypro.homework.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import ru.skypro.homework.dto.Role;
 
 import javax.persistence.*;
+import java.util.List;
+
 
 @Entity
 @Table(name = "users")
+@Setter
+@Getter
 public class UserEntity {
 
     @Id
@@ -18,4 +24,8 @@ public class UserEntity {
     private String phone;
     private Role role;
     private String image;
+
+    @OneToMany
+    private List<Ad> ads;
+
 }
