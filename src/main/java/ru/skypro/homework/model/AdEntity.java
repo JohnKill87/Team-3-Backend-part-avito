@@ -1,13 +1,16 @@
 package ru.skypro.homework.model;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import ru.skypro.homework.dto.User;
 
 import javax.persistence.*;
 
-@Data
 @Entity
 @Table(name = "ads")
+@Setter
+@Getter
 public class AdEntity {
 
     @Id

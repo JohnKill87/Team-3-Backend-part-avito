@@ -1,9 +1,13 @@
 package ru.skypro.homework.dto;
 
+import lombok.Data;
+import ru.skypro.homework.model.UserEntity;
+
+@Data
 public class AdDto {
 
     private int id;
-    private int author;
+    private UserEntity author;
     private String title;
     private String description;
     private int price;
