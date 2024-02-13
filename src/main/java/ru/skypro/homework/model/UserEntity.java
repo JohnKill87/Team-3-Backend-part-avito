@@ -26,6 +26,6 @@ public class UserEntity {
     private String image;
 
     @OneToMany
-    private List<Ad> ads;
+    private List<AdEntity> ads;
 
 }
