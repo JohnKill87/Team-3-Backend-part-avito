@@ -1,12 +1,13 @@
 package ru.skypro.homework.controller;
 
-import com.sun.istack.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import ru.skypro.homework.dto.AdsDto;
-import ru.skypro.homework.dto.CreateOrUpdateAdDto;
+import ru.skypro.homework.dto.Ads;
+import ru.skypro.homework.dto.CreateOrUpdateAd;
 import ru.skypro.homework.model.AdEntity;
+import ru.skypro.homework.service.AdService;
 import ru.skypro.homework.service.impl.AdServiceImpl;
 
 
@@ -18,7 +19,7 @@ import java.util.List;
 @RequestMapping("/ads")
 public class AdController {
 
-    private final AdServiceImpl adService;
+    private final AdService adService;
 
     public AdController(AdServiceImpl adService) {
         this.adService = adService;
@@ -30,7 +31,7 @@ public class AdController {
     }
 
     @GetMapping
-    public AdsDto getAllAds() {
+    public Ads getAllAds() {
         return adService.getAllAds();
     }
 
@@ -46,14 +47,15 @@ public class AdController {
 
     @PatchMapping("{id}")
     public ResponseEntity<AdEntity> announcementInformation(@PathVariable("id") Integer id,
-                                                            @RequestBody CreateOrUpdateAdDto dto) {
+                                                            @RequestBody CreateOrUpdateAd dto) {
         return ResponseEntity.ok().build();
 
     }
 
     @GetMapping("/me")
-    public ResponseEntity<List<AdsDto>> getAdsAuthUser () {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Ads> getAdsAuthUser (Authentication authentication) {
+        String userName = authentication.getName();
+        return ResponseEntity.ok(adService.getAdsMe(userName));
     }
 
     @PatchMapping("{id}/image")

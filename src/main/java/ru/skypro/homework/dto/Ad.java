@@ -4,7 +4,7 @@ import lombok.Data;
 import ru.skypro.homework.model.UserEntity;
 
 @Data
-public class AdDto {
+public class Ad {
 
     private int id;
     private UserEntity author;
