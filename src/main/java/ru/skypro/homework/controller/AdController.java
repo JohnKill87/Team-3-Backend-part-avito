@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import ru.skypro.homework.dto.Ads;
+import ru.skypro.homework.dto.AdsDto;
 import ru.skypro.homework.dto.CreateOrUpdateAd;
 import ru.skypro.homework.model.AdEntity;
 import ru.skypro.homework.service.AdService;
@@ -13,7 +13,6 @@ import ru.skypro.homework.service.impl.AdServiceImpl;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 @RestController
 @RequestMapping("/ads")
@@ -31,7 +30,7 @@ public class AdController {
     }
 
     @GetMapping
-    public Ads getAllAds() {
+    public AdsDto getAllAds() {
         return adService.getAllAds();
     }
 
@@ -53,7 +52,7 @@ public class AdController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<Ads> getAdsAuthUser (Authentication authentication) {
+    public ResponseEntity<AdsDto> getAdsAuthUser (Authentication authentication) {
         String userName = authentication.getName();
         return ResponseEntity.ok(adService.getAdsMe(userName));
     }

@@ -2,13 +2,12 @@ package ru.skypro.homework.service.impl;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.homework.dto.Ad;
-import ru.skypro.homework.dto.Ads;
+import ru.skypro.homework.dto.AdDto;
+import ru.skypro.homework.dto.AdsDto;
 import ru.skypro.homework.dto.CreateOrUpdateAd;
 import ru.skypro.homework.exception.AdNotFoundException;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.model.AdEntity;
-import ru.skypro.homework.model.UserEntity;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.service.AdService;
 
@@ -33,7 +32,7 @@ public class AdServiceImpl implements AdService {
 
     //Добавление объявления
     @Override
-    public Ad addAd(CreateOrUpdateAd properties, MultipartFile image) {
+    public AdDto addAd(CreateOrUpdateAd properties, MultipartFile image) {
         AdEntity adEntity = new AdEntity();
 
         adEntity.setDescription(properties.getDescription());
@@ -48,8 +47,8 @@ public class AdServiceImpl implements AdService {
 
     //Получение всех объявлений
     @Override
-    public Ads getAllAds() {
-        return (Ads) adRepository.findAll();
+    public AdsDto getAllAds() {
+        return (AdsDto) adRepository.findAll();
     }
 
     //удаление объявления
@@ -61,7 +60,7 @@ public class AdServiceImpl implements AdService {
 
     //обновление информации об объявлении
     @Override
-    public Ad updateAds(Integer id, CreateOrUpdateAd dto) {
+    public AdDto updateAds(Integer id, CreateOrUpdateAd dto) {
         AdEntity adEntity = adRepository.findById(id).get();
 
         adEntity.setTitle(dto.getTitle());
@@ -73,10 +72,10 @@ public class AdServiceImpl implements AdService {
     }
 
     //получение объявлений авторизованного пользователя
-    //нужен метод с класса UserService - "Получение информации об авторизованном пользователе"
     @Override
-    public Ads getAdsMe(String username) {
+    public AdsDto getAdsMe(String userName) {
 
+        //нужен метод с класса UserService - "Получение информации об авторизованном пользователе"
 
         return null;
     }
