@@ -1,11 +1,14 @@
 package ru.skypro.homework.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
 
 @Entity
+@Table(name = "comments")
+@Setter
+@Getter
 public class CommentEntity {
 
     @Id
@@ -13,6 +16,10 @@ public class CommentEntity {
     private Integer id; // id комментария
     private String text; // текст комментария
     private Long createdAT; // дата и время создания комментария
-//    private UserEntity author // автор комментария
-//    private AdEntity ad; // объявление, к которому прикреплен комментарий
+    @JoinColumn(name = "user_id")
+    @ManyToOne
+    private UserEntity author; // автор комментария
+    @ManyToOne
+    private AdEntity ad; // объявление, к которому прикреплен комментарий
+
 }
