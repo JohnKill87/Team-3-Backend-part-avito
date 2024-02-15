@@ -1,20 +1,20 @@
 package ru.skypro.homework.dto;
 
 import lombok.Data;
+import ru.skypro.homework.model.AdEntity;
+import ru.skypro.homework.model.UserEntity;
 
 @Data
+
 public class Comment {
 
-    private Integer author; // id автора комментария
+    private Integer id;
 
-    private String authorImage; // ссылка на аватар автора
+    private String text;
 
-    private String authorFirstname; // имя автора комментария
+    private Long createdAT;
 
-    private Long createdAt; // дата и время создания комментария
+    private UserEntity author;
 
-    private Integer pk; // id комментария
-
-    private String text; // текст комментария
-
+    private AdEntity ad;
 }
