@@ -3,9 +3,9 @@ package ru.skypro.homework.dto;
 import lombok.Data;
 
 @Data
-public class CreateOrUpdateAdDto {
+public class CreateOrUpdateAd {
 
-    private String heading;
+    private String title;
 
     private Integer price;
 
