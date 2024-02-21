@@ -1,12 +1,13 @@
 package ru.skypro.homework.mapper;
 
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.Comment;
 import ru.skypro.homework.model.AdEntity;
 import ru.skypro.homework.model.CommentEntity;
 import ru.skypro.homework.model.UserEntity;
 
-@Service
+@Component
 public class CommentMapper {
 
 //  Из Entity в DTO

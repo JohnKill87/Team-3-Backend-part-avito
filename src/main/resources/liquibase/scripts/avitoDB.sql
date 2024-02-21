@@ -6,8 +6,8 @@
 CREATE TABLE users (
 id SERIAL PRIMARY KEY,
 email VARCHAR(255),
-firstName VARCHAR(255),
-lastName VARCHAR(255),
+first_name VARCHAR(255),
+last_name VARCHAR(255),
 phone VARCHAR(255),
 role VARCHAR(255),
 image VARCHAR(255)
@@ -34,3 +34,6 @@ user_id SERIAL,
 ad VARCHAR(255)
 );
 
+--changeset roma:4
+ALTER TABLE users
+ADD COLUMN password VARCHAR(255)

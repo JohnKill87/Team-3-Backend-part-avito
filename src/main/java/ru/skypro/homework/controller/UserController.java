@@ -2,25 +2,34 @@ package ru.skypro.homework.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.homework.dto.Password;
+import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.User;
 import ru.skypro.homework.model.UserEntity;
 import ru.skypro.homework.service.UserService;
+import ru.skypro.homework.service.impl.AuthServiceImpl;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
-
-    public UserController(UserService userService) {
+    private final AuthServiceImpl authService;
+    public UserController(UserService userService, AuthServiceImpl authService) {
         this.userService = userService;
+        this.authService = authService;
     }
 
     @PostMapping("/set_password")
-    public ResponseEntity<?> setPassword(@RequestBody Password password) {
-            return ResponseEntity.ok().build();
+    public ResponseEntity<NewPassword> setPassword(@RequestBody NewPassword password, Authentication authentication) {
+        NewPassword resultPassword = new NewPassword();
+        authService.changePassword(
+                authentication.getName(),
+                password.getCurrentPassword(),
+                password.getNewPassword())
+                .ifPresent(resultPassword::setCurrentPassword);
+            return ResponseEntity.ok(resultPassword);
     }
 
     @GetMapping("/me")

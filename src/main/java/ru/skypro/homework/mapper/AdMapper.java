@@ -1,10 +1,11 @@
 package ru.skypro.homework.mapper;
 
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.AdDto;
 import ru.skypro.homework.model.AdEntity;
 
-@Service
+@Component
 public class AdMapper {
 
 //    Из Entity в DTO
