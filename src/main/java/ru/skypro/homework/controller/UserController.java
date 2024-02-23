@@ -7,42 +7,40 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.User;
+import ru.skypro.homework.dto.UserGetDto;
 import ru.skypro.homework.model.UserEntity;
 import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.service.impl.AuthServiceImpl;
 
+import javax.validation.constraints.NotBlank;
+
 @RestController
 @RequestMapping("/users")
+@CrossOrigin(value = "http://localhost:3000")
 public class UserController {
     private final UserService userService;
-    private final AuthServiceImpl authService;
     public UserController(UserService userService, AuthServiceImpl authService) {
         this.userService = userService;
-        this.authService = authService;
     }
 
-    @PostMapping("/set_password")
-    public ResponseEntity<NewPassword> setPassword(@RequestBody NewPassword password, Authentication authentication) {
-        NewPassword resultPassword = new NewPassword();
-        authService.changePassword(
-                authentication.getName(),
-                password.getCurrentPassword(),
-                password.getNewPassword())
-                .ifPresent(resultPassword::setCurrentPassword);
-            return ResponseEntity.ok(resultPassword);
-    }
-
-    @GetMapping("/me")
-    public ResponseEntity<UserEntity> getUser() {
+    @PostMapping(value = "/set_password")
+    public ResponseEntity<?> setPassword(@RequestBody NewPassword password, Authentication authentication) {
+        userService.changePassword(password, authentication);
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping(value = "/me")
+    public ResponseEntity<?> getUser(Authentication authentication) {
+        UserGetDto user = userService.getUserInfo(authentication);
+        return ResponseEntity.ok(user);
+    }
 
-    @PatchMapping("/me")
-    public ResponseEntity<User> updateUser(@RequestBody User user) {
+
+    @PatchMapping(value = "/me")
+    public ResponseEntity<User> updateUser(@RequestBody User user, Authentication authentication) {
         if (user != null) {
-            userService.updateUserEntity(user);
-            return ResponseEntity.ok().build();
+            User userDto = userService.updateUserEntity(user, authentication);
+            return ResponseEntity.ok(userDto);
         } else {
             return ResponseEntity.badRequest().build();
         }
@@ -52,10 +50,5 @@ public class UserController {
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateUserImage(@RequestParam MultipartFile avatar) {
         return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/test")
-    public String test() {
-        return "TEST";
     }
 }
