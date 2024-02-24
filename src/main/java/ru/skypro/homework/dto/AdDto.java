@@ -9,7 +9,6 @@ public class AdDto {
     private int pk;
     private UserEntity author;
     private String title;
-    private String description;
     private int price;
     private String image;
 }
