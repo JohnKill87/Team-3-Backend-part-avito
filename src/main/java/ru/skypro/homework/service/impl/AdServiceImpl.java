@@ -5,6 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.AdDto;
 import ru.skypro.homework.dto.AdsDto;
 import ru.skypro.homework.dto.CreateOrUpdateAd;
+import ru.skypro.homework.dto.ExtendedAd;
 import ru.skypro.homework.exception.AdNotFoundException;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.model.AdEntity;
@@ -23,11 +24,16 @@ public class AdServiceImpl implements AdService {
         this.adRepository = adRepository;
     }
 
-    //Получение информации об объявлении
-    @Override
-    public AdEntity getAdsById(Integer id) {
+    public AdEntity getAd(Integer id) {
         return adRepository.findById(id)
                 .orElseThrow(() -> new AdNotFoundException("Объявление не найдено"));
+    }
+
+    //Получение информации об объявлении
+    @Override
+    public ExtendedAd getAdsById(Integer id) {
+//        adRepository.findById(id);
+        return adMapper.mapToExtendedAdDTO(getAd(id));
     }
 
     //Добавление объявления
@@ -54,7 +60,7 @@ public class AdServiceImpl implements AdService {
     //удаление объявления
     @Override
     public void deleteAds(int id) {
-        AdEntity removedAd = getAdsById(id);
+        AdEntity removedAd = getAd(id);
         adRepository.delete(removedAd);
     }
 
