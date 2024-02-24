@@ -49,4 +49,17 @@ public class UsersMapper {
         userGetDto.setPhone(userEntity.getPhone());
         return userGetDto;
     }
+
+    //Из UserGetDto в UserEntity
+    public UserEntity mapToUserEntity (UserGetDto userGetDto) {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userGetDto.getId());
+        userEntity.setEmail(userGetDto.getEmail());
+        userEntity.setFirstName(userGetDto.getFirstName());
+        userEntity.setLastName(userGetDto.getLastName());
+        userEntity.setPhone(userGetDto.getPhone());
+        userEntity.setRole(userGetDto.getRole());
+        userEntity.setImage(userGetDto.getImage());
+        return userEntity;
+    }
 }

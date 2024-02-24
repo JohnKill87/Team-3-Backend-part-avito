@@ -1,54 +1,40 @@
 package ru.skypro.homework.service.impl;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.AdDto;
 import ru.skypro.homework.dto.AdsDto;
 import ru.skypro.homework.dto.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ExtendedAd;
-import ru.skypro.homework.exception.AdNotFoundException;
 import ru.skypro.homework.mapper.AdMapper;
+import ru.skypro.homework.mapper.UsersMapper;
 import ru.skypro.homework.model.AdEntity;
+import ru.skypro.homework.model.UserEntity;
 import ru.skypro.homework.repository.AdRepository;
+import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.AdService;
+import ru.skypro.homework.service.UserService;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AdServiceImpl implements AdService {
 
     private final AdMapper adMapper;
+    private final UsersMapper usersMapper;
     private final AdRepository adRepository;
+    private final UserRepository userRepository;
+    private final UserService userService;
 
 
-    public AdServiceImpl(AdMapper adMapper, AdRepository adRepository) {
+    public AdServiceImpl(AdMapper adMapper, UsersMapper usersMapper, AdRepository adRepository, UserRepository userRepository, UserService userService) {
         this.adMapper = adMapper;
+        this.usersMapper = usersMapper;
         this.adRepository = adRepository;
-    }
-
-    public AdEntity getAd(Integer id) {
-        return adRepository.findById(id)
-                .orElseThrow(() -> new AdNotFoundException("Объявление не найдено"));
-    }
-
-    //Получение информации об объявлении
-    @Override
-    public ExtendedAd getAdsById(Integer id) {
-//        adRepository.findById(id);
-        return adMapper.mapToExtendedAdDTO(getAd(id));
-    }
-
-    //Добавление объявления
-    @Override
-    public AdDto addAd(CreateOrUpdateAd properties, MultipartFile image) {
-        AdEntity adEntity = new AdEntity();
-
-        adEntity.setDescription(properties.getDescription());
-        adEntity.setPrice(properties.getPrice());
-        adEntity.setTitle(properties.getTitle());
-
-        //нужна реализация класса UserService
-
-        adRepository.save(adEntity);
-        return adMapper.mapToAdDTO(adEntity);
+        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     //Получение всех объявлений
@@ -57,14 +43,35 @@ public class AdServiceImpl implements AdService {
         return (AdsDto) adRepository.findAll();
     }
 
-    //удаление объявления
+    //Добавление объявления
     @Override
-    public void deleteAds(int id) {
-        AdEntity removedAd = getAd(id);
-        adRepository.delete(removedAd);
+    public AdDto addAd(CreateOrUpdateAd properties, Authentication authentication, String image) {
+        AdEntity adEntity = new AdEntity();
+        adEntity.setDescription(properties.getDescription());
+        adEntity.setPrice(properties.getPrice());
+        adEntity.setTitle(properties.getTitle());
+        adEntity.setAuthor(usersMapper.mapToUserEntity(userService.getUserInfo(authentication)));
+        adEntity.setImage(image);
+
+        adRepository.save(adEntity);
+        return adMapper.mapToAdDTO(adEntity);
     }
 
-    //обновление информации об объявлении
+    //Получение информации об объявлении
+    @Override
+    public ExtendedAd getAdsById(Integer id) {
+        AdEntity ad = adRepository.findById(id).get();
+        return adMapper.mapToExtendedAdDTO(ad);
+    }
+
+    //Удаление объявления
+    @Override
+    public void deleteAds(Integer id) {
+        AdEntity ad = adRepository.findById(id).get();
+        adRepository.delete(ad);
+    }
+
+    //Обновление информации об объявлении
     @Override
     public AdDto updateAds(Integer id, CreateOrUpdateAd dto) {
         AdEntity adEntity = adRepository.findById(id).get();
@@ -77,20 +84,24 @@ public class AdServiceImpl implements AdService {
         return adMapper.mapToAdDTO(adEntity);
     }
 
-    //получение объявлений авторизованного пользователя
+    //Получение объявлений авторизованного пользователя
     @Override
-    public AdsDto getAdsMe(String userName) {
+    public AdsDto getAdsUser(String userName) {
+        UserEntity user = userRepository.findUserByUserName(userName);
 
-        //нужен метод с класса UserService - "Получение информации об авторизованном пользователе"
+        List<AdDto> ads = adRepository.findByAuthor(user).stream()
+                .map(adEntity -> adMapper.mapToAdDTO(adEntity))
+                .collect(Collectors.toList());
 
-        return null;
+        AdsDto adsDto = new AdsDto(ads.size(), ads);
+        return adsDto;
     }
 
-    //обновление картинки объявления
+    //Обновление картинки объявления
     @Override
-    public void updateImage(Integer id, MultipartFile image) {
+    public void updateImage(Integer id, String image) {
         AdEntity adEntity = adRepository.findById(id).get();
-        //пока хз как сделать
+        adEntity.setImage(image);
         adRepository.save(adEntity);
     }
 }

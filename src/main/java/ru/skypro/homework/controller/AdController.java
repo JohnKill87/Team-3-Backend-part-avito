@@ -44,8 +44,9 @@ public class AdController {
 
     @PostMapping
     public ResponseEntity<AdDto> addAds(@RequestBody CreateOrUpdateAd properties,
-                                        @RequestPart MultipartFile image) {
-        return ResponseEntity.ok(adService.addAd(properties, image));
+                                        Authentication authentication,
+                                        @RequestPart String image) {
+        return ResponseEntity.ok(adService.addAd(properties, authentication, image));
     }
 
     @PatchMapping("{id}")
@@ -58,12 +59,12 @@ public class AdController {
     @GetMapping("/me")
     public ResponseEntity<AdsDto> getAdsAuthUser (Authentication authentication) {
         String userName = authentication.getName();
-        return ResponseEntity.ok(adService.getAdsMe(userName));
+        return ResponseEntity.ok(adService.getAdsUser(userName));
     }
 
     @PatchMapping("{id}/image")
     public void announcementImage(@PathVariable("id") Integer id,
-                                  @RequestPart MultipartFile image) {
+                                  @RequestPart String image) {
         adService.updateImage(id, image);
     }
 }
