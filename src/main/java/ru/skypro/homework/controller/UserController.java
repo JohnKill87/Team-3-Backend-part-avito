@@ -1,5 +1,6 @@
 package ru.skypro.homework.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -17,6 +18,7 @@ import javax.validation.constraints.NotBlank;
 @RestController
 @RequestMapping("/users")
 @CrossOrigin(value = "http://localhost:3000")
+@Tag(name = "Users")
 public class UserController {
     private final UserService userService;
     public UserController(UserService userService, AuthServiceImpl authService) {

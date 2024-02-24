@@ -19,16 +19,23 @@ public class UserEntity {
     private Long id;
 
     private String email;
+    private String password;
     private String firstName;
     private String lastName;
     private String phone;
 
     @Enumerated(EnumType.STRING)
     private Role role;
-    private String image;
-    private String password;
+
+
+    @OneToMany(mappedBy = "author")
+    private List<CommentEntity> comments;
 
     @OneToMany
     private List<AdEntity> ads;
+
+    @OneToOne
+    @JoinColumn(name = "image")
+    private AvatarEntity avatar;
 
 }
