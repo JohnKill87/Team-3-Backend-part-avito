@@ -36,6 +36,6 @@ public class UserEntity {
 
     @OneToOne
     @JoinColumn(name = "image")
-    private AvatarEntity avatar;
+    private AvatarEntity image;
 
 }

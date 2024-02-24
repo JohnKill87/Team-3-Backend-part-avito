@@ -1,6 +1,7 @@
 package ru.skypro.homework.dto;
 
 import lombok.Data;
+import ru.skypro.homework.model.AvatarEntity;
 
 @Data
 public class UserGetDto {
@@ -10,5 +11,5 @@ public class UserGetDto {
     private String firstName;
     private String phone;
     private Role role;
-    private String image;
+    private AvatarEntity image;
 }
