@@ -6,7 +6,7 @@ import ru.skypro.homework.model.UserEntity;
 @Data
 public class AdDto {
 
-    private int id;
+    private int pk;
     private UserEntity author;
     private String title;
     private String description;
