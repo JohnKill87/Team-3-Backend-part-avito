@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.Register;
 import ru.skypro.homework.dto.User;
+import ru.skypro.homework.dto.UserGetDto;
 import ru.skypro.homework.model.UserEntity;
 
 @Component
@@ -35,5 +36,17 @@ public class UsersMapper {
         userEntity.setLastName(user.getLastName());
         userEntity.setPhone(user.getPhone());
         return userEntity;
+    }
+// из Entity в GetDto
+    public UserGetDto mapToUserGetDto(UserEntity userEntity) {
+        UserGetDto userGetDto = new UserGetDto();
+        userGetDto.setId(userEntity.getId());
+        userGetDto.setEmail(userEntity.getEmail());
+        userGetDto.setFirstName(userEntity.getFirstName());
+        userGetDto.setLastName(userEntity.getLastName());
+        userGetDto.setImage(userEntity.getImage());
+        userGetDto.setRole(userEntity.getRole());
+        userGetDto.setPhone(userEntity.getPhone());
+        return userGetDto;
     }
 }

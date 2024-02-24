@@ -37,7 +37,8 @@ public class WebSecurityConfig {
                                         .mvcMatchers(AUTH_WHITELIST)
                                         .permitAll()
                                         .mvcMatchers("/ads/**", "/users/**")
-                                        .authenticated())
+                                        .authenticated()
+                                        .antMatchers("/ads/{id}","/ads").hasRole("USER"))
                 .cors()
                 .and()
                 .httpBasic(withDefaults());
