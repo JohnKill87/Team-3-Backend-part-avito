@@ -1,13 +1,10 @@
 package ru.skypro.homework.service.impl;
 
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
-import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.Register;
-import ru.skypro.homework.dto.Role;
 import ru.skypro.homework.mapper.UsersMapper;
 import ru.skypro.homework.model.UserEntity;
 import ru.skypro.homework.repository.UserRepository;
@@ -38,25 +35,6 @@ public class AuthServiceImpl implements AuthService {
         return encoder.matches(password, userDetails.getPassword());
     }
 
-    @Override
-    public Optional<String> changePassword(String username, String currentPassword, String newPassword) {
-        Optional<UserEntity> userOptional = userRepository.findByEmail(username);
-
-        if (userOptional.isPresent()) {
-            UserEntity user = userOptional.get();
-
-            if (encoder.matches(currentPassword, user.getPassword())) {
-                String newPasswordEncoded = encoder.encode(newPassword);
-                user.setPassword(newPasswordEncoded);
-                userRepository.save(user);
-                return Optional.of("Password changed successfully");
-            } else {
-                return Optional.of("Current password is incorrect");
-            }
-        } else {
-            return Optional.empty();
-        }
-    }
 
     @Override
     public boolean register(Register register) {
