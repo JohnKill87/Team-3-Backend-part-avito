@@ -45,7 +45,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Comment addComment(Integer id, CreateOrUpdateComment createOrUpdateComment, String username) {
-        UserEntity author = userRepository.findUserByUserName(username);
+        UserEntity author = userRepository.findUserByEmail(username);
         AdEntity ad = adRepository.findById(id).orElse(null);
 
         CommentEntity commentEntity = new CommentEntity();
@@ -73,12 +73,12 @@ public class CommentServiceImpl implements CommentService {
     public String deleteComment(Integer commentId, String username) {
         Optional<CommentEntity> comment = commentRepository.findById(commentId);
         if (comment.isPresent()) {
-            UserEntity author = userRepository.findUserByUserName(username);
+            UserEntity author = userRepository.findUserByEmail(username);
             if (author.getRole().equals(Role.ADMIN)) {
                 commentRepository.delete(comment.get());
                 return "комментарий удален";
             } else if (author.getRole().equals(Role.USER)) {
-                if (comment.get().getAuthor().getUserName().equals(author.getUserName())) {
+                if (comment.get().getAuthor().getEmail().equals(author.getEmail())) {
                     commentRepository.delete(comment.get());
                     return "комментарий удален";
                 } else {
@@ -94,7 +94,7 @@ public class CommentServiceImpl implements CommentService {
         Optional<CommentEntity> commentOptional = commentRepository.findById(commentId);
         if (commentOptional.isPresent()) {
             CommentEntity comment = commentOptional.get();
-            UserEntity author = userRepository.findUserByUserName(username);
+            UserEntity author = userRepository.findUserByEmail(username);
             if (author.getComments().contains(comment)) {
                 comment.setText(createOrUpdateComment.getText());
                 commentRepository.save(comment);
