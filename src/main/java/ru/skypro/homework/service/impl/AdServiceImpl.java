@@ -80,7 +80,7 @@ public class AdServiceImpl implements AdService {
     //Получение объявлений авторизованного пользователя
     @Override
     public AdsDto getAdsUser(String userName) {
-        UserEntity user = userRepository.findUserByUserName(userName);
+        UserEntity user = userRepository.findUserByEmail(userName);
 
         List<AdDto> ads = adRepository.findByAuthor(user).stream()
                 .map(adEntity -> adMapper.mapToAdDTO(adEntity))
