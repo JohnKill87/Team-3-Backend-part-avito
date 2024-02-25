@@ -32,4 +32,5 @@ public class CommentMapper {
         commentEntity.setAd(comment.getAd());
         return commentEntity;
     }
+
 }
