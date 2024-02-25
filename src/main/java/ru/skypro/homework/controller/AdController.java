@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @RestController
+@CrossOrigin(value = "http://localhost:3000")
 @RequestMapping("/ads")
 public class AdController {
 
