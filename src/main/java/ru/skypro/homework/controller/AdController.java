@@ -14,6 +14,7 @@ import ru.skypro.homework.service.AdService;
 import ru.skypro.homework.service.impl.AdServiceImpl;
 
 
+import javax.validation.Valid;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -44,7 +45,7 @@ public class AdController {
     }
 
     @PostMapping
-    public ResponseEntity<AdDto> addAds(@RequestBody CreateOrUpdateAd properties,
+    public ResponseEntity<AdDto> addAds(@RequestPart CreateOrUpdateAd properties,
                                         Authentication authentication,
                                         @RequestPart String image) {
         return ResponseEntity.ok(adService.addAd(properties, authentication, image));
