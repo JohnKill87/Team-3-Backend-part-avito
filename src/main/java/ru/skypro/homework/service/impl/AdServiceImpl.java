@@ -40,7 +40,7 @@ public class AdServiceImpl implements AdService {
     //Получение всех объявлений
     @Override
     public AdsDto getAllAds() {
-        return (AdsDto) adRepository.findAll();
+        return adMapper.adsMap(adRepository.findAll());
     }
 
     //Добавление объявления
@@ -93,7 +93,7 @@ public class AdServiceImpl implements AdService {
                 .map(adEntity -> adMapper.mapToAdDTO(adEntity))
                 .collect(Collectors.toList());
 
-        AdsDto adsDto = new AdsDto(ads.size(), ads);
+        AdsDto adsDto = new AdsDto();
         return adsDto;
     }
 

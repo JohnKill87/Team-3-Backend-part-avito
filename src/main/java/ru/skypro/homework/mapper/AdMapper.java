@@ -2,9 +2,13 @@ package ru.skypro.homework.mapper;
 
 import org.springframework.stereotype.Component;
 import ru.skypro.homework.dto.AdDto;
+import ru.skypro.homework.dto.AdsDto;
 import ru.skypro.homework.dto.ExtendedAd;
 import ru.skypro.homework.model.AdEntity;
 import ru.skypro.homework.model.UserEntity;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Component
 public class AdMapper {
@@ -32,6 +36,17 @@ public class AdMapper {
         extendedAd.setPrice(adEntity.getPrice());
         extendedAd.setTitle(adEntity.getTitle());
         return extendedAd;
+    }
+
+    public AdsDto adsMap(Collection<AdEntity> ads) {
+        AdsDto result = new AdsDto();
+        result.setResults(
+                ads.stream()
+                        .map(this::mapToAdDTO)
+                        .collect(Collectors.toList())
+        );
+        result.setCount(ads.size());
+        return result;
     }
 
 //    Из DTO в Entity
