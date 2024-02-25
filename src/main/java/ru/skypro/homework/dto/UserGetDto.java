@@ -5,7 +5,7 @@ import ru.skypro.homework.model.AvatarEntity;
 
 @Data
 public class UserGetDto {
-    private Long id;
+    private int id;
     private String email;
     private String lastName;
     private String firstName;

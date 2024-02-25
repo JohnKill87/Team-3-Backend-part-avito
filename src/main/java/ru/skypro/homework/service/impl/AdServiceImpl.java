@@ -1,5 +1,6 @@
 package ru.skypro.homework.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class AdServiceImpl implements AdService {
 
     private final AdMapper adMapper;
@@ -27,15 +29,6 @@ public class AdServiceImpl implements AdService {
     private final AdRepository adRepository;
     private final UserRepository userRepository;
     private final UserService userService;
-
-
-    public AdServiceImpl(AdMapper adMapper, UsersMapper usersMapper, AdRepository adRepository, UserRepository userRepository, UserService userService) {
-        this.adMapper = adMapper;
-        this.usersMapper = usersMapper;
-        this.adRepository = adRepository;
-        this.userRepository = userRepository;
-        this.userService = userService;
-    }
 
     //Получение всех объявлений
     @Override
@@ -46,7 +39,7 @@ public class AdServiceImpl implements AdService {
     //Добавление объявления
     @Override
     public AdDto addAd(CreateOrUpdateAd properties, Authentication authentication, String image) {
-        AdEntity adEntity = new AdEntity();
+        AdEntity adEntity = adMapper.mapCreatedOrUpdatedAd(properties);
         adEntity.setDescription(properties.getDescription());
         adEntity.setPrice(properties.getPrice());
         adEntity.setTitle(properties.getTitle());

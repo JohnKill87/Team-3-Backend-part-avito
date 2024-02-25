@@ -47,8 +47,8 @@ public class AdController {
     @PostMapping
     public ResponseEntity<AdDto> addAds(@RequestPart CreateOrUpdateAd properties,
                                         Authentication authentication,
-                                        @RequestPart String image) {
-        return ResponseEntity.ok(adService.addAd(properties, authentication, image));
+                                        @RequestPart MultipartFile image) {
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("{id}")

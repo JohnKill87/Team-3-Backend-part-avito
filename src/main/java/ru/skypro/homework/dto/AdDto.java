@@ -7,7 +7,7 @@ import ru.skypro.homework.model.UserEntity;
 public class AdDto {
 
     private int pk;
-    private UserEntity author;
+    private int author;
     private String title;
     private int price;
     private String image;
