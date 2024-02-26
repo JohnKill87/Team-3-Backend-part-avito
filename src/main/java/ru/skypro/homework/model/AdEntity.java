@@ -21,13 +21,15 @@ public class AdEntity {
     @ManyToOne
     private UserEntity author;
 
-    private String image;
-
     private String title;
 
     private String description;
 
     private int price;
+
+    @JoinColumn(name = "image_id")
+    @OneToOne
+    private ImageEntity image;
 
     public int getId() {
         return id;
@@ -43,14 +45,6 @@ public class AdEntity {
 
     public void setAuthor(UserEntity author) {
         this.author = author;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
     }
 
     public String getTitle() {

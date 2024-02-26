@@ -3,6 +3,7 @@ package ru.skypro.homework.mapper;
 import org.springframework.stereotype.Component;
 import ru.skypro.homework.dto.AdDto;
 import ru.skypro.homework.dto.AdsDto;
+import ru.skypro.homework.dto.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ExtendedAd;
 import ru.skypro.homework.model.AdEntity;
 import ru.skypro.homework.model.UserEntity;
@@ -20,7 +21,7 @@ public class AdMapper {
         adDto.setAuthor(adEntity.getAuthor());
         adDto.setTitle(adEntity.getTitle());
         adDto.setPrice(adEntity.getPrice());
-        adDto.setImage(adEntity.getImage());
+        adDto.setImage("/ads/" + adEntity.getImage().getId() + "/image");
         return adDto;
     }
 
@@ -31,7 +32,7 @@ public class AdMapper {
         extendedAd.setAuthorLastName(adEntity.getAuthor().getLastName());
         extendedAd.setDescription(adEntity.getDescription());
         extendedAd.setEmail(adEntity.getAuthor().getEmail());
-        extendedAd.setImage(adEntity.getImage());
+        extendedAd.setImage("/ads/" + adEntity.getImage().getId() + "/image");
         extendedAd.setPhone(adEntity.getAuthor().getPhone());
         extendedAd.setPrice(adEntity.getPrice());
         extendedAd.setTitle(adEntity.getTitle());
@@ -49,14 +50,21 @@ public class AdMapper {
         return result;
     }
 
+    public AdEntity mapCreateOrUpdateAd(CreateOrUpdateAd createOrUpdateAd) {
+        AdEntity adEntity = new AdEntity();
+        adEntity.setTitle(createOrUpdateAd.getTitle());
+        adEntity.setDescription(createOrUpdateAd.getDescription());
+        adEntity.setPrice(createOrUpdateAd.getPrice());
+        return adEntity;
+    }
+
 //    Из DTO в Entity
     public AdEntity mapToAdEntity(AdDto adDto) {
         AdEntity adEntity = new AdEntity();
-        adEntity.setId(adDto.getPk());
-        adEntity.setAuthor(adDto.getAuthor());
+        adEntity.getAuthor().setId(adDto.getAuthor().getId());
         adEntity.setTitle(adDto.getTitle());
         adEntity.setPrice(adDto.getPrice());
-        adEntity.setImage(adDto.getImage());
+        adEntity.getImage().setId(adDto.getImage());
         return adEntity;
     }
 }

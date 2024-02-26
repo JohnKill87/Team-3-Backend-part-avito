@@ -1,6 +1,7 @@
 package ru.skypro.homework.controller;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ import java.util.Collections;
 
 @RestController
 @RequestMapping("/ads")
+@CrossOrigin(value = "http://localhost:3000")
 public class AdController {
 
     private final AdService adService;
@@ -42,11 +44,11 @@ public class AdController {
         adService.deleteAds(id);
     }
 
-    @PostMapping
-    public ResponseEntity<AdDto> addAds(@RequestBody CreateOrUpdateAd properties,
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public AdDto addAds(@RequestPart CreateOrUpdateAd properties,
                                         Authentication authentication,
-                                        @RequestPart String image) {
-        return ResponseEntity.ok(adService.addAd(properties, authentication, image));
+                                        @RequestPart MultipartFile image) {
+        return adService.addAd(properties, authentication, image);
     }
 
     @PatchMapping("{id}")
@@ -64,7 +66,7 @@ public class AdController {
 
     @PatchMapping("{id}/image")
     public void announcementImage(@PathVariable("id") Integer id,
-                                  @RequestPart String image) {
+                                  @RequestPart MultipartFile image) {
         adService.updateImage(id, image);
     }
 }
