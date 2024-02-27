@@ -14,10 +14,12 @@ import ru.skypro.homework.service.AdService;
 import ru.skypro.homework.service.impl.AdServiceImpl;
 
 
+import javax.validation.Valid;
 import java.util.Collection;
 import java.util.Collections;
 
 @RestController
+@CrossOrigin(value = "http://localhost:3000")
 @RequestMapping("/ads")
 public class AdController {
 
@@ -43,9 +45,10 @@ public class AdController {
     }
 
     @PostMapping
-    public ResponseEntity<AdDto> addAds(@RequestBody CreateOrUpdateAd properties,
+    public ResponseEntity<AdDto> addAds(@RequestPart CreateOrUpdateAd properties,
+                                        Authentication authentication,
                                         @RequestPart MultipartFile image) {
-        return ResponseEntity.ok(adService.addAd(properties, image));
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("{id}")
@@ -58,12 +61,12 @@ public class AdController {
     @GetMapping("/me")
     public ResponseEntity<AdsDto> getAdsAuthUser (Authentication authentication) {
         String userName = authentication.getName();
-        return ResponseEntity.ok(adService.getAdsMe(userName));
+        return ResponseEntity.ok(adService.getAdsUser(userName));
     }
 
     @PatchMapping("{id}/image")
     public void announcementImage(@PathVariable("id") Integer id,
-                                  @RequestPart MultipartFile image) {
+                                  @RequestPart String image) {
         adService.updateImage(id, image);
     }
 }

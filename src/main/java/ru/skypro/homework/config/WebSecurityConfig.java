@@ -29,6 +29,7 @@ public class WebSecurityConfig {
             "/register",
     };
 
+    private static final String[] PROTECTED = {"/ads/**","/users/**"};
     @Bean
     public UserDetailsService userDetailsService(UserService userService) {
         return username -> {

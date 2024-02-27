@@ -100,7 +100,7 @@ paths:
     post:
       tags:
         - Авторизация
-      summary: 'Авторизация пользователя'
+      summary: 'Авторизация Пользователя'
       operationId: login
       requestBody:
         content:

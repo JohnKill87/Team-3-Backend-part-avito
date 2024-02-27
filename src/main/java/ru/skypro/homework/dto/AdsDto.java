@@ -10,4 +10,5 @@ public class AdsDto {
     private Integer count;
 
     private List<AdDto> results;
+
 }
