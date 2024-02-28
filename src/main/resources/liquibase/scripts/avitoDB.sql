@@ -9,18 +9,18 @@ first_name VARCHAR(255),
 last_name VARCHAR(255),
 phone VARCHAR(255),
 role VARCHAR(255),
-image VARCHAR(255)
+avatar VARCHAR(255)
 );
 
 --changeset ilya:2
 
 CREATE TABLE ads (
 id SERIAL PRIMARY KEY,
+image VARCHAR(255),
 title VARCHAR(255),
 description VARCHAR(255),
 price INT,
-user_id SERIAL,
-image_id VARCHAR(255)
+user_id SERIAL
 );
 
 --changeset vyacheslav:3
@@ -34,13 +34,6 @@ ad VARCHAR(255)
 );
 
 --changeset roma:4
-
 ALTER TABLE users
 ADD COLUMN password VARCHAR(255)
-
---changeset ilya:5
-
-CREATE TABLE images (
-image_id VARCHAR(255),
-image BYTEA
 );

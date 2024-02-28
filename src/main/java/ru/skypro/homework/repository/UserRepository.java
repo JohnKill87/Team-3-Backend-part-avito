@@ -8,12 +8,8 @@ import ru.skypro.homework.model.UserEntity;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserEntity, Long> {
+public interface UserRepository extends JpaRepository<UserEntity, Integer> {
 
-    boolean existsByEmail(String email);
-    Optional<UserEntity> findByEmail(String email);
-
-    boolean existsByPassword(String currentPassword);
-
-    UserEntity findUserByEmail(String name);
+    boolean existsByEmail(String username);
+    Optional<UserEntity> findByEmail(String username);
 }

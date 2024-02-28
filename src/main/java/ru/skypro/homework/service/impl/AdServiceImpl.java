@@ -3,7 +3,6 @@ package ru.skypro.homework.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.AdDto;
 import ru.skypro.homework.dto.AdsDto;
 import ru.skypro.homework.dto.CreateOrUpdateAd;
@@ -11,19 +10,19 @@ import ru.skypro.homework.dto.ExtendedAd;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.mapper.UsersMapper;
 import ru.skypro.homework.model.AdEntity;
-import ru.skypro.homework.model.ImageEntity;
 import ru.skypro.homework.model.UserEntity;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.AdService;
-import ru.skypro.homework.service.ImageService;
 import ru.skypro.homework.service.UserService;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AdServiceImpl implements AdService {
 
     private final AdMapper adMapper;
@@ -31,7 +30,6 @@ public class AdServiceImpl implements AdService {
     private final AdRepository adRepository;
     private final UserRepository userRepository;
     private final UserService userService;
-    private final ImageService imageService;
 
     //Получение всех объявлений
     @Override
@@ -41,13 +39,16 @@ public class AdServiceImpl implements AdService {
 
     //Добавление объявления
     @Override
-    public AdDto addAd(CreateOrUpdateAd properties, Authentication authentication, MultipartFile image) {
-        AdEntity adEntity = adMapper.mapCreateOrUpdateAd(properties);
+    public AdDto addAd(CreateOrUpdateAd properties, Authentication authentication, String image) {
+        AdEntity adEntity = adMapper.mapCreatedOrUpdatedAd(properties);
+        adEntity.setDescription(properties.getDescription());
+        adEntity.setPrice(properties.getPrice());
+        adEntity.setTitle(properties.getTitle());
         adEntity.setAuthor(usersMapper.mapToUserEntity(userService.getUserInfo(authentication)));
-        ImageEntity imageEntity = imageService.addImage(image);
-        adEntity.setImage(imageEntity);
+        adEntity.setImage(image);
 
-        return adMapper.mapToAdDTO(adRepository.save(adEntity));
+        adRepository.save(adEntity);
+        return adMapper.mapToAdDTO(adEntity);
     }
 
     //Получение информации об объявлении
@@ -80,10 +81,10 @@ public class AdServiceImpl implements AdService {
     //Получение объявлений авторизованного пользователя
     @Override
     public AdsDto getAdsUser(String userName) {
-        UserEntity user = userRepository.findUserByEmail(userName);
+        UserEntity user = userRepository.findByEmail(userName).get();
 
         List<AdDto> ads = adRepository.findByAuthor(user).stream()
-                .map(adEntity -> adMapper.mapToAdDTO(adEntity))
+                .map(adMapper::mapToAdDTO)
                 .collect(Collectors.toList());
 
         AdsDto adsDto = new AdsDto();
@@ -92,10 +93,9 @@ public class AdServiceImpl implements AdService {
 
     //Обновление картинки объявления
     @Override
-    public void updateImage(Integer id, MultipartFile image) {
-        AdEntity adEntity = adRepository.findById(id).orElseThrow();
-        ImageEntity imageEntity = imageService.updateImage(image, adEntity.getImage());
-        adEntity.setImage(imageEntity);
+    public void updateImage(Integer id, String image) {
+        AdEntity adEntity = adRepository.findById(id).get();
+        adEntity.setImage(image);
         adRepository.save(adEntity);
     }
 }
