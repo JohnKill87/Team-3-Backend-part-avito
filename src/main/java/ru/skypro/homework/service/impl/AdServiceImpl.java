@@ -22,7 +22,9 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+
 @Transactional
+=======
 public class AdServiceImpl implements AdService {
 
     private final AdMapper adMapper;

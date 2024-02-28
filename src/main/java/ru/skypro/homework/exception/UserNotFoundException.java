@@ -1,5 +1,8 @@
 package ru.skypro.homework.exception;
 
+
+=======
+
 public class UserNotFoundException extends RuntimeException {
 
     private final Integer id;
