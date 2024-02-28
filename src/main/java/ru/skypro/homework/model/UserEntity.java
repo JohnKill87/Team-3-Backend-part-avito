@@ -71,4 +71,7 @@ public class UserEntity implements UserDetails {
     @OneToMany
     private List<AdEntity> ads;
 
+
+=======
+
 }

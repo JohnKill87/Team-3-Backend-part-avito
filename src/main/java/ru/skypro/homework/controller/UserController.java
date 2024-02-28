@@ -10,16 +10,13 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.User;
 import ru.skypro.homework.dto.UserGetDto;
-import ru.skypro.homework.model.UserEntity;
 import ru.skypro.homework.service.UserService;
-import ru.skypro.homework.service.impl.AuthServiceImpl;
 
-import javax.validation.constraints.NotBlank;
 
 @RestController
 @RequestMapping("/users")
-@CrossOrigin(value = "http://localhost:3000")
 @Tag(name = "Users")
+@CrossOrigin(value = "http://localhost:3000")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;

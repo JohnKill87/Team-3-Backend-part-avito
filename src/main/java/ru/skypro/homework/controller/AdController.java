@@ -17,10 +17,12 @@ import ru.skypro.homework.service.impl.AdServiceImpl;
 
 
 import java.io.IOException;
+import javax.validation.Valid;
 import java.util.Collection;
 import java.util.Collections;
 
 @RestController
+@CrossOrigin(value = "http://localhost:3000")
 @RequestMapping("/ads")
 @CrossOrigin(value = "http://localhost:3000")
 @RequiredArgsConstructor
