@@ -29,7 +29,7 @@ import static java.nio.file.StandardOpenOption.CREATE_NEW;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    @Value("${path.to.avatars.folder}")
+    @Value("${path.to.user.photo}")
     private String photoAvatar;
     private final UserRepository userRepository;
     private final UsersMapper usersMapper;

@@ -32,12 +32,12 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserInfo(authentication));
     }
 
-    @GetMapping(value = "{id}/avatar", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
+    @GetMapping(value = "/{id}/avatar", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
     public ResponseEntity<byte[]> getAvatar(@PathVariable Integer id) {
         return ResponseEntity.ok(userService.getAvatar(id));
     }
 
-    @PatchMapping(value = "/me")
+    @PatchMapping(value = "me")
     public ResponseEntity<User> updateUser(@RequestBody User user, Authentication authentication) {
         return ResponseEntity.ok(userService.updateUserEntity(user, authentication));
     }
