@@ -25,16 +25,6 @@ public class CommentController {
         this.adService = adService;
     }
 
-    private final UserRepository userRepository;
-    private final CommentService commentService;
-    private final AdServiceImpl adService;
-
-    public CommentController(UserRepository userRepository, CommentService commentService, AdServiceImpl adService) {
-        this.userRepository = userRepository;
-        this.commentService = commentService;
-        this.adService = adService;
-    }
-
     @GetMapping("{id}/comments")
     public ResponseEntity<Comments> getComment(@PathVariable("id") Integer id, Authentication authentication) {
         if (authentication.getName() != null) {

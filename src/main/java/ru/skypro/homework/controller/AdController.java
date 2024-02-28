@@ -24,7 +24,6 @@ import java.util.Collections;
 @RestController
 @CrossOrigin(value = "http://localhost:3000")
 @RequestMapping("/ads")
-@CrossOrigin(value = "http://localhost:3000")
 @RequiredArgsConstructor
 public class AdController {
 
