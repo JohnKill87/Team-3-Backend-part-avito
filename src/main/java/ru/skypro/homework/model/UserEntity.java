@@ -72,4 +72,6 @@ public class UserEntity implements UserDetails {
     private List<AdEntity> ads;
 
 
+=======
+
 }

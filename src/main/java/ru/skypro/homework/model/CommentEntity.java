@@ -19,6 +19,7 @@ public class CommentEntity {
     @JoinColumn(name = "user_id")
     @ManyToOne
     private UserEntity author; // автор комментария
+    @JoinColumn(name = "ad_id")
     @ManyToOne
     private AdEntity ad; // объявление, к которому прикреплен комментарий
 

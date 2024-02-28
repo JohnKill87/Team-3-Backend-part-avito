@@ -8,6 +8,10 @@ import ru.skypro.homework.dto.User;
 import ru.skypro.homework.dto.UserGetDto;
 import ru.skypro.homework.model.UserEntity;
 
+
+import java.io.IOException;
+import java.util.Optional;
+=======
 import java.security.Principal;
 
 public interface UserService {

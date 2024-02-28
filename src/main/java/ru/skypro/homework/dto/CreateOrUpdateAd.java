@@ -2,6 +2,7 @@ package ru.skypro.homework.dto;
 
 import lombok.Data;
 import ru.skypro.homework.config.AdParameters;
+
 import ru.skypro.homework.model.AdEntity;
 
 import javax.validation.constraints.Max;

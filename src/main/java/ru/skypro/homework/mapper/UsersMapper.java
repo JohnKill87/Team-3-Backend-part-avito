@@ -8,6 +8,8 @@ import ru.skypro.homework.dto.User;
 import ru.skypro.homework.dto.UserGetDto;
 import ru.skypro.homework.model.UserEntity;
 
+import java.util.Optional;
+
 @Component
 public class UsersMapper {
     @Value("${path.to.default.user.photo}")

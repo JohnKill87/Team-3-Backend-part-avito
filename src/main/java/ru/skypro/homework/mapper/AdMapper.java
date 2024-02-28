@@ -8,13 +8,15 @@ import ru.skypro.homework.dto.ExtendedAd;
 import ru.skypro.homework.model.AdEntity;
 import ru.skypro.homework.model.UserEntity;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
 public class AdMapper {
 
-//    Из Entity в DTO
+    //    Из Entity в DTO
     public AdDto mapToAdDTO(AdEntity adEntity) {
         AdDto adDto = new AdDto();
         adDto.setPk(adEntity.getId());
@@ -58,7 +60,7 @@ public class AdMapper {
         return result;
     }
 
-//    Из DTO в Entity
+    //    Из DTO в Entity
     public AdEntity mapToAdEntity(AdDto adDto) {
         AdEntity adEntity = new AdEntity();
         adEntity.setId(adDto.getPk());

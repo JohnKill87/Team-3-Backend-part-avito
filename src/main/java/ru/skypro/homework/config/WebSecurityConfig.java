@@ -3,6 +3,7 @@ package ru.skypro.homework.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -42,6 +43,30 @@ public class WebSecurityConfig {
     }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(conf
+                -> conf.antMatchers(AUTH_WHITELIST).permitAll());
+        http.authorizeHttpRequests(conf
+                -> conf.antMatchers(HttpMethod.GET, "/ads/*/image").permitAll());
+        http.authorizeHttpRequests(conf
+                -> conf.antMatchers(HttpMethod.GET, "/ads").permitAll());
+        http.authorizeHttpRequests(conf
+                -> conf.antMatchers(PROTECTED).hasAnyRole("USER", "ADMIN"));
+        http.csrf(conf -> conf.disable());
+        http.cors(Customizer.withDefaults());
+        http.httpBasic(Customizer.withDefaults());
+//        http.csrf()
+//                .disable()
+//                .authorizeHttpRequests(
+//                        authorization ->
+//                                authorization
+//                                        .mvcMatchers(AUTH_WHITELIST)
+//                                        .permitAll()
+//                                        .mvcMatchers("/ads/**", "/users/**")
+//                                        .authenticated()
+//                                        .antMatchers("/ads/{id}","/ads").hasRole("USER"))
+//                .cors()
+//                .and()
+//                .httpBasic(withDefaults());
         http.csrf()
                 .disable()
                 .authorizeHttpRequests(

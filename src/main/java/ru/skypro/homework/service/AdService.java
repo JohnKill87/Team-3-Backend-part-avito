@@ -8,6 +8,8 @@ import ru.skypro.homework.dto.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ExtendedAd;
 import ru.skypro.homework.model.AdEntity;
 
+import java.io.IOException;
+
 public interface AdService {
 
     ExtendedAd getAdsById(Integer id);
@@ -17,8 +19,4 @@ public interface AdService {
     AdDto updateAds(Integer id, CreateOrUpdateAd dto);
     AdsDto getAdsUser(String userName);
     void updateImage(Integer id, String image);
-
-
-
-
 }

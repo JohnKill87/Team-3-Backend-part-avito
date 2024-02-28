@@ -15,6 +15,15 @@ import ru.skypro.homework.service.impl.AdServiceImpl;
 @RestController
 @RequestMapping("/ads")
 public class CommentController {
+    private final UserRepository userRepository;
+    private final CommentService commentService;
+    private final AdServiceImpl adService;
+
+    public CommentController(UserRepository userRepository, CommentService commentService, AdServiceImpl adService) {
+        this.userRepository = userRepository;
+        this.commentService = commentService;
+        this.adService = adService;
+    }
 
     private final UserRepository userRepository;
     private final CommentService commentService;

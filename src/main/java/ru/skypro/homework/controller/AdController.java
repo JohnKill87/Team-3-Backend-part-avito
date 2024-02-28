@@ -1,6 +1,8 @@
 package ru.skypro.homework.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,7 @@ import ru.skypro.homework.service.AdService;
 import ru.skypro.homework.service.impl.AdServiceImpl;
 
 
+import java.io.IOException;
 import javax.validation.Valid;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,6 +24,8 @@ import java.util.Collections;
 @RestController
 @CrossOrigin(value = "http://localhost:3000")
 @RequestMapping("/ads")
+@CrossOrigin(value = "http://localhost:3000")
+@RequiredArgsConstructor
 public class AdController {
 
     private final AdService adService;

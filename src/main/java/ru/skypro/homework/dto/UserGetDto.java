@@ -6,6 +6,9 @@ import lombok.Data;
 @Data
 @Schema(name = "User")
 public class UserGetDto {
+
+    private int id;
+=======
     private Integer id;
     private String email;
     private String lastName;
