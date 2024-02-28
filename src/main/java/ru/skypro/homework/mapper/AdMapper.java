@@ -2,9 +2,14 @@ package ru.skypro.homework.mapper;
 
 import org.springframework.stereotype.Component;
 import ru.skypro.homework.dto.AdDto;
+import ru.skypro.homework.dto.AdsDto;
+import ru.skypro.homework.dto.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ExtendedAd;
 import ru.skypro.homework.model.AdEntity;
 import ru.skypro.homework.model.UserEntity;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Component
 public class AdMapper {
@@ -13,7 +18,7 @@ public class AdMapper {
     public AdDto mapToAdDTO(AdEntity adEntity) {
         AdDto adDto = new AdDto();
         adDto.setPk(adEntity.getId());
-        adDto.setAuthor(adEntity.getAuthor());
+        adDto.setAuthor(adEntity.getAuthor().getId());
         adDto.setTitle(adEntity.getTitle());
         adDto.setPrice(adEntity.getPrice());
         adDto.setImage(adEntity.getImage());
@@ -34,11 +39,30 @@ public class AdMapper {
         return extendedAd;
     }
 
+    public AdEntity mapCreatedOrUpdatedAd(CreateOrUpdateAd createOrUpdateAd) {
+        AdEntity adEntity = new AdEntity();
+        adEntity.setTitle(createOrUpdateAd.getTitle());
+        adEntity.setDescription(createOrUpdateAd.getDescription());
+        adEntity.setPrice(createOrUpdateAd.getPrice());
+        return adEntity;
+    }
+
+    public AdsDto adsMap(Collection<AdEntity> ads) {
+        AdsDto result = new AdsDto();
+        result.setResults(
+                ads.stream()
+                        .map(this::mapToAdDTO)
+                        .collect(Collectors.toList())
+        );
+        result.setCount(ads.size());
+        return result;
+    }
+
 //    Из DTO в Entity
     public AdEntity mapToAdEntity(AdDto adDto) {
         AdEntity adEntity = new AdEntity();
         adEntity.setId(adDto.getPk());
-        adEntity.setAuthor(adDto.getAuthor());
+        adEntity.getAuthor().setId(adDto.getAuthor());
         adEntity.setTitle(adDto.getTitle());
         adEntity.setPrice(adDto.getPrice());
         adEntity.setImage(adDto.getImage());
