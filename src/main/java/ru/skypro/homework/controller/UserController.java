@@ -27,7 +27,7 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("me")
+    @GetMapping(value = "me")
     public ResponseEntity<UserGetDto> getUserInfo(Authentication authentication) {
         return ResponseEntity.ok(userService.getUserInfo(authentication));
     }

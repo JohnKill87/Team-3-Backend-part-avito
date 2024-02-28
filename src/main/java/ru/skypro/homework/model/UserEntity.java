@@ -9,6 +9,7 @@ import ru.skypro.homework.dto.Role;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 
 @Entity
@@ -64,11 +65,11 @@ public class UserEntity implements UserDetails {
 
 
 
-//    @OneToMany(mappedBy = "author")
-//    private List<CommentEntity> comments;
-//
-//    @OneToMany
-//    private List<AdEntity> ads;
+    @OneToMany(mappedBy = "author")
+    private List<CommentEntity> comments;
+
+    @OneToMany
+    private List<AdEntity> ads;
 
 
 }

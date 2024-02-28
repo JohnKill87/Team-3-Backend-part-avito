@@ -25,6 +25,18 @@ public class UsersMapper {
 
         return userEntity;
     }
+    //Из UserGetDto в UserEntity
+    public UserEntity mapToUserEntity (UserGetDto userGetDto) {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userGetDto.getId());
+        userEntity.setEmail(userGetDto.getEmail());
+        userEntity.setFirstName(userGetDto.getFirstName());
+        userEntity.setLastName(userGetDto.getLastName());
+        userEntity.setPhone(userGetDto.getPhone());
+        userEntity.setRole(userGetDto.getRole());
+        userEntity.setAvatar(userGetDto.getImage());
+        return userEntity;
+    }
     public UserGetDto mapToUserGetDto(UserEntity userEntity) {
         UserGetDto userGetDto = new UserGetDto();
         userGetDto.setId(userEntity.getId());
