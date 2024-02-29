@@ -2,23 +2,21 @@ package ru.skypro.homework.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import ru.skypro.homework.model.UserEntity;
-import ru.skypro.homework.repository.UserRepository;
-import ru.skypro.homework.service.UserService;
+import ru.skypro.homework.dto.Role;
+
+import javax.sql.DataSource;
 
 import static org.springframework.security.config.Customizer.withDefaults;
-
+@EnableMethodSecurity
 @Configuration
-@EnableWebSecurity
 public class WebSecurityConfig {
 
     private static final String[] AUTH_WHITELIST = {
@@ -28,53 +26,21 @@ public class WebSecurityConfig {
             "/webjars/**",
             "/login",
             "/register",
+            "/ads",
+            "/photo/**"
     };
 
-    private static final String[] PROTECTED = {"/ads/**","/users/**"};
-    @Bean
-    public UserDetailsService userDetailsService(UserService userService) {
-        return username -> {
-            UserEntity userEntity = userService.getUserByEmail(username);
-            if (userEntity != null) {
-                return userEntity;
-            }
-            throw new UsernameNotFoundException("User with username - " + username + " not found!");
-        };
-    }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(conf
-                -> conf.antMatchers(AUTH_WHITELIST).permitAll());
-        http.authorizeHttpRequests(conf
-                -> conf.antMatchers(HttpMethod.GET, "/ads/*/image").permitAll());
-        http.authorizeHttpRequests(conf
-                -> conf.antMatchers(HttpMethod.GET, "/ads").permitAll());
-        http.authorizeHttpRequests(conf
-                -> conf.antMatchers(PROTECTED).hasAnyRole("USER", "ADMIN"));
-        http.csrf(conf -> conf.disable());
-        http.cors(Customizer.withDefaults());
-        http.httpBasic(Customizer.withDefaults());
-//        http.csrf()
-//                .disable()
-//                .authorizeHttpRequests(
-//                        authorization ->
-//                                authorization
-//                                        .mvcMatchers(AUTH_WHITELIST)
-//                                        .permitAll()
-//                                        .mvcMatchers("/ads/**", "/users/**")
-//                                        .authenticated()
-//                                        .antMatchers("/ads/{id}","/ads").hasRole("USER"))
-//                .cors()
-//                .and()
-//                .httpBasic(withDefaults());
         http.csrf()
                 .disable()
                 .authorizeHttpRequests(
                         authorization ->
                                 authorization
-                                        .mvcMatchers(AUTH_WHITELIST).permitAll()
-                                        .mvcMatchers(HttpMethod.GET, "/ads").permitAll()
-                                        .mvcMatchers("/ads/**", "/users/**").authenticated())
+                                        .mvcMatchers(AUTH_WHITELIST)
+                                        .permitAll()
+                                        .mvcMatchers("/ads/**", "/users/**")
+                                        .authenticated())
                 .cors()
                 .and()
                 .httpBasic(withDefaults());

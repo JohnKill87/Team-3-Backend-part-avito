@@ -1,33 +1,24 @@
 package ru.skypro.homework.mapper;
 
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import ru.skypro.homework.constants.Constants;
 import ru.skypro.homework.dto.Comment;
+import ru.skypro.homework.model.AdEntity;
 import ru.skypro.homework.model.CommentEntity;
+import ru.skypro.homework.model.UserEntity;
 
-@Component
+@Service
 public class CommentMapper {
 
-//  Из Entity в DTO
-
-    public Comment mapToComment(CommentEntity commentEntity) {
-        Comment comments = new Comment();
-        comments.setId(commentEntity.getId());
-        comments.setText(commentEntity.getText());
-        comments.setCreatedAT(commentEntity.getCreatedAT());
-        comments.setAuthor(commentEntity.getAuthor());
-        comments.setAd(commentEntity.getAd());
-        return comments;
+    public Comment mapToCommentDto(CommentEntity entity) {
+        Comment dto = new Comment();
+        dto.setAuthor(entity.getAuthor().getId());
+        dto.setAuthorImage(Constants.URL_PHOTO_CONSTANT + entity.getAuthor().getPhoto().getId());
+        dto.setAuthorFirstName(entity.getAuthor().getFirstName());
+        dto.setCreatedAt(entity.getCreatedAt());
+        dto.setPk(entity.getId());
+        dto.setText(entity.getText());
+        return dto;
     }
-
-    //    из DTO в Entity
-    public CommentEntity mapToCommentEntity(Comment comments) {
-        CommentEntity commentEntity = new CommentEntity();
-        commentEntity.setId(comments.getId());
-        commentEntity.setText(comments.getText());
-        commentEntity.setCreatedAT(comments.getCreatedAT());
-        commentEntity.setAuthor(comments.getAuthor());
-        commentEntity.setAd(comments.getAd());
-        return commentEntity;
-    }
-
 }
