@@ -1,7 +1,14 @@
 package ru.skypro.homework.exception;
 
 public class AdNotFoundException extends RuntimeException {
-    public AdNotFoundException(String message) {
-        super(message);
+    private final Integer id;
+
+    public AdNotFoundException(Integer id) {
+        this.id = id;
+    }
+
+    @Override
+    public String getMessage() {
+        return "User with id = " + id + " not found!";
     }
 }

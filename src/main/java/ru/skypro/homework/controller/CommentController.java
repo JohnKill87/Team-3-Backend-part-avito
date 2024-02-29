@@ -1,70 +1,93 @@
 package ru.skypro.homework.controller;
 
-import org.springframework.http.HttpStatus;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ru.skypro.homework.dto.Comment;
 import ru.skypro.homework.dto.Comments;
 import ru.skypro.homework.dto.CreateOrUpdateComment;
-import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.CommentService;
-import ru.skypro.homework.service.impl.AdServiceImpl;
 
+@CrossOrigin(value = "http://localhost:3000")
 @RestController
-@RequestMapping("/ads")
+@RequestMapping("ads")
+@RequiredArgsConstructor
 public class CommentController {
 
-    private final UserRepository userRepository;
     private final CommentService commentService;
-    private final AdServiceImpl adService;
 
-    public CommentController(UserRepository userRepository, CommentService commentService, AdServiceImpl adService) {
-        this.userRepository = userRepository;
-        this.commentService = commentService;
-        this.adService = adService;
-    }
-
-    @GetMapping("{id}/comments")
-    public ResponseEntity<Comments> getComment(@PathVariable("id") Integer id, Authentication authentication) {
-        if (authentication.getName() != null) {
-            return ResponseEntity.ok(commentService.getComments(id));
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-    }
-
-    @PostMapping("{id}/comments")
-    public ResponseEntity<Comment> addComment(@PathVariable("id") Integer id, @RequestBody CreateOrUpdateComment createOrUpdateComment, Authentication authentication) {
-        return ResponseEntity.ok(commentService.addComment(id, createOrUpdateComment, authentication.getName()));
-    }
-
-    @DeleteMapping("{adId}/comments/{commentId}")
-    @PreAuthorize(value = "hasRole('ADMIN') or @adServiceImpl.isAuthorAd(authentication.getName(), #adId)")
-    public ResponseEntity<?> deleteComment(@PathVariable("adId") Integer adId, @PathVariable("commentId") Integer commentId, Authentication authentication) {
-        if (authentication.getName() != null) {
-            String result = commentService.deleteComment(commentId, authentication.getName());
-            if (result.equals("forbidden")) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            } else if (result.equals("not found")) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            } else {
-                return ResponseEntity.status(HttpStatus.OK).build();
+    @Operation(
+            summary = "Adding a comment to an ad",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK",
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = Comment.class))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+                    @ApiResponse(responseCode = "404", description = "Not found", content = @Content)
             }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    )
+    @PostMapping("{adId}/comments")
+    public ResponseEntity<Comment> createComment(@PathVariable Integer adId,
+                                                 @RequestBody CreateOrUpdateComment createOrUpdateComment,
+                                                 Authentication authentication) {
+        return ResponseEntity.ok(commentService.createComment(adId, createOrUpdateComment, authentication));
     }
 
+    @Operation(
+            summary = "Receiving ad comments",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK",
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = Comments.class))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+                    @ApiResponse(responseCode = "404", description = "Not found", content = @Content)
+            }
+    )
+    @GetMapping("{adId}/comments")
+    public ResponseEntity<Comments> getComments(@PathVariable Integer adId) {
+        return ResponseEntity.ok(commentService.getComments(adId));
+    }
+
+    @Operation(
+            summary = "Comment update",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK",
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = Comment.class))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+                    @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content),
+                    @ApiResponse(responseCode = "404", description = "Not found", content = @Content)
+            }
+    )
     @PatchMapping("{adId}/comments/{commentId}")
-    @PreAuthorize(value = "hasRole('ADMIN') or @adServiceImpl.isAuthorAd(authentication.getName(), #adId)")
-    public ResponseEntity<Comment> updateComment(@PathVariable("adId") Integer adId, @PathVariable("commentId") Integer commentId, @RequestBody CreateOrUpdateComment createOrUpdateComment, Authentication authentication) {
-        if (authentication.getName() != null) {
-            Comment comment = commentService.updateComment(commentId, createOrUpdateComment, authentication.getName());
-            return ResponseEntity.ok(comment);
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    public ResponseEntity<Comment> updateComment(@PathVariable Integer adId,
+                                                 @PathVariable Integer commentId,
+                                                 @RequestBody CreateOrUpdateComment createOrUpdateComment,
+                                                 Authentication authentication) {
+        return ResponseEntity.ok(commentService.updateComment(adId, commentId, createOrUpdateComment, authentication));
+    }
+
+    @Operation(
+            summary = "Delete comment",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+                    @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content),
+                    @ApiResponse(responseCode = "404", description = "Not found", content = @Content)
+            }
+    )
+    @DeleteMapping("{adId}/comments/{commentId}")
+    public ResponseEntity<?> deleteComment(@PathVariable Integer adId, @PathVariable Integer commentId, Authentication authentication) {
+        commentService.deleteComment(adId, commentId, authentication);
+        return ResponseEntity.ok().build();
     }
 }
+
 

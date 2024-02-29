@@ -1,20 +1,19 @@
 package ru.skypro.homework.dto;
 
 import lombok.Data;
-import ru.skypro.homework.model.AdEntity;
-import ru.skypro.homework.model.UserEntity;
 
 @Data
-
 public class Comment {
 
-    private Integer id;
+        private Integer pk;
 
-    private String text;
+        private Integer author;
 
-    private Long createdAT;
+        private String authorImage;
 
-    private UserEntity author;
+        private String authorFirstName;
 
-    private AdEntity ad;
+        private Long createdAt;
+
+        private String text;
 }

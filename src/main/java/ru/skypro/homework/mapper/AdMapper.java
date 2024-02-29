@@ -1,71 +1,68 @@
 package ru.skypro.homework.mapper;
 
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.skypro.homework.dto.AdDto;
 import ru.skypro.homework.dto.AdsDto;
 import ru.skypro.homework.dto.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ExtendedAd;
 import ru.skypro.homework.model.AdEntity;
-import ru.skypro.homework.model.UserEntity;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class AdMapper {
 
-//    Из Entity в DTO
-    public AdDto mapToAdDTO(AdEntity adEntity) {
+    public AdEntity toEntity(CreateOrUpdateAd createOrUpdateAd) {
+        AdEntity ad = new AdEntity();
+
+        ad.setTitle(createOrUpdateAd.getTitle());
+        ad.setDescription(createOrUpdateAd.getDescription());
+        ad.setPrice(createOrUpdateAd.getPrice().toString());
+
+        return ad;
+    }
+
+    public AdDto toAdDto(AdEntity adEntity) {
         AdDto adDto = new AdDto();
-        adDto.setPk(adEntity.getId());
-        adDto.setAuthor(adEntity.getAuthor().getId());
+
+        adDto.setPk(adEntity.getPk());
+        adDto.setAuthor(adEntity.getUser().getId());
+        adDto.setImage("/" + adEntity.getPk() + "/image");
+        adDto.setPrice(Integer.parseInt(adEntity.getPrice()));
         adDto.setTitle(adEntity.getTitle());
-        adDto.setPrice(adEntity.getPrice());
-        adDto.setImage(adEntity.getImage());
+
         return adDto;
     }
 
-    public ExtendedAd mapToExtendedAdDTO(AdEntity adEntity) {
-        ExtendedAd extendedAd = new ExtendedAd();
-        extendedAd.setPk(adEntity.getId());
-        extendedAd.setAuthorFirstName(adEntity.getAuthor().getFirstName());
-        extendedAd.setAuthorLastName(adEntity.getAuthor().getLastName());
-        extendedAd.setDescription(adEntity.getDescription());
-        extendedAd.setEmail(adEntity.getAuthor().getEmail());
-        extendedAd.setImage(adEntity.getImage());
-        extendedAd.setPhone(adEntity.getAuthor().getPhone());
-        extendedAd.setPrice(adEntity.getPrice());
-        extendedAd.setTitle(adEntity.getTitle());
-        return extendedAd;
+    public AdsDto toAdsDto(List<AdEntity> ads) {
+        AdsDto adsDto = new AdsDto();
+        List<AdDto> adDtoList = ads.stream()
+                .map(this::toAdDto)
+                .collect(Collectors.toList());
+
+        adsDto.setCount(adDtoList.size());
+        adsDto.setResults(adDtoList);
+
+        return adsDto;
     }
 
-    public AdEntity mapCreatedOrUpdatedAd(CreateOrUpdateAd createOrUpdateAd) {
-        AdEntity adEntity = new AdEntity();
-        adEntity.setTitle(createOrUpdateAd.getTitle());
-        adEntity.setDescription(createOrUpdateAd.getDescription());
-        adEntity.setPrice(createOrUpdateAd.getPrice());
-        return adEntity;
-    }
+    public ExtendedAd toExtendedAdDto(AdEntity adEntity) {
+        ExtendedAd extendedAdDto = new ExtendedAd();
 
-    public AdsDto adsMap(Collection<AdEntity> ads) {
-        AdsDto result = new AdsDto();
-        result.setResults(
-                ads.stream()
-                        .map(this::mapToAdDTO)
-                        .collect(Collectors.toList())
-        );
-        result.setCount(ads.size());
-        return result;
-    }
+        extendedAdDto.setPk(adEntity.getPk());
+        extendedAdDto.setAuthorFirstName(adEntity.getUser().getFirstName());
+        extendedAdDto.setAuthorLastName(adEntity.getUser().getLastName());
+        extendedAdDto.setDescription(adEntity.getDescription());
+        extendedAdDto.setEmail(adEntity.getUser().getEmail());
+        extendedAdDto.setImage("/" + adEntity.getPk() + "/image");
+        extendedAdDto.setPhone(adEntity.getUser().getPhone());
+        extendedAdDto.setPrice(Integer.parseInt(adEntity.getPrice()));
+        extendedAdDto.setTitle(adEntity.getTitle());
 
-//    Из DTO в Entity
-    public AdEntity mapToAdEntity(AdDto adDto) {
-        AdEntity adEntity = new AdEntity();
-        adEntity.setId(adDto.getPk());
-        adEntity.getAuthor().setId(adDto.getAuthor());
-        adEntity.setTitle(adDto.getTitle());
-        adEntity.setPrice(adDto.getPrice());
-        adEntity.setImage(adDto.getImage());
-        return adEntity;
+        return extendedAdDto;
     }
 }

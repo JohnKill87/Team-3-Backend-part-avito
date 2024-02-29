@@ -16,7 +16,6 @@ import java.util.List;
 @Table(name = "users")
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(of = "id")
 public class UserEntity implements UserDetails {
 
     @Id
@@ -31,6 +30,13 @@ public class UserEntity implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+
+//    @OneToMany(mappedBy = "userEntity")
+//    private List<CommentEntity> comments;
+//
+//    @OneToMany
+//    private List<AdEntity> ads;
 
 
     @Override
@@ -64,12 +70,6 @@ public class UserEntity implements UserDetails {
     }
 
 
-
-    @OneToMany(mappedBy = "author")
-    private List<CommentEntity> comments;
-
-    @OneToMany
-    private List<AdEntity> ads;
 
 
 }

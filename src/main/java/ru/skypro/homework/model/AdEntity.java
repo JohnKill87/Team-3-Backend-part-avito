@@ -1,79 +1,27 @@
 package ru.skypro.homework.model;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import ru.skypro.homework.dto.User;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
+@Data
+@NoArgsConstructor
+@EqualsAndHashCode(of = "pk")
 @Table(name = "ads")
-@Setter
-@Getter
 public class AdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
-    @JoinColumn(name = "user_id")
-    @ManyToOne
-    private UserEntity author;
-
-    private String image;
-
+    private Integer pk;
     private String title;
-
+    private String image;
     private String description;
+    private String price;
 
-    private int price;
+    @ManyToOne
+    private UserEntity user;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public UserEntity getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(UserEntity author) {
-        this.author = author;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
-    }
 }

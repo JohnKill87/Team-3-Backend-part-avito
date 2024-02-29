@@ -10,13 +10,23 @@ import ru.skypro.homework.model.AdEntity;
 
 public interface AdService {
 
-    ExtendedAd getAdsById(Integer id);
-    AdDto addAd(CreateOrUpdateAd properties, Authentication authentication, String image);
-    AdsDto getAllAds();
-    void deleteAds(Integer id);
-    AdDto updateAds(Integer id, CreateOrUpdateAd dto);
-    AdsDto getAdsUser(String userName);
-    void updateImage(Integer id, String image);
+    AdDto createAd(CreateOrUpdateAd createOrUpdateAdDto, MultipartFile image, Authentication authentication);
+
+    AdEntity getAd(Integer id);
+
+    AdsDto getAll();
+
+    ExtendedAd getInfoAboutAd(Integer id);
+
+    byte[] getImage(Integer id);
+
+    void deleteAd(Integer id, Authentication authentication);
+
+    AdDto updateAd(Integer id, CreateOrUpdateAd createOrUpdateAdDto, Authentication authentication);
+
+    AdsDto getMyAds(Authentication authentication);
+
+    byte[] updateAdImage(Integer id, MultipartFile image, Authentication authentication);
 
 
 

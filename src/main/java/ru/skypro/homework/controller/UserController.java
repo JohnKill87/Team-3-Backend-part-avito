@@ -21,7 +21,7 @@ import ru.skypro.homework.service.UserService;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping("set_password")
+    @PostMapping(value = "set_password")
     public ResponseEntity<?> setPassword(@RequestBody NewPassword password, Authentication authentication) {
         userService.changePassword(password, authentication);
         return ResponseEntity.ok().build();
