@@ -3,6 +3,7 @@ package ru.skypro.homework.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,13 +13,20 @@ import ru.skypro.homework.dto.UpdateUser;
 import ru.skypro.homework.exception.PasswordIsNotMatchException;
 import ru.skypro.homework.exception.UserNotFoundException;
 import ru.skypro.homework.mapper.UserMapper;
+import ru.skypro.homework.model.ModelEntity;
+import ru.skypro.homework.model.PhotoEntity;
 import ru.skypro.homework.model.UserEntity;
 import ru.skypro.homework.repository.PhotoRepository;
 import ru.skypro.homework.repository.UserRepository;
+import ru.skypro.homework.service.ImageService;
 import ru.skypro.homework.service.UserService;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 
+/**
+ * Реализация сервиса {@link UserService} для работы с пользователями.
+ */
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
@@ -41,7 +49,10 @@ public class UserServiceImpl implements UserService {
         this.encoder = encoder;
     }
 
-
+    /**
+     * Метод сервиса для изменения пароля.
+     * Используется методы репозитория {@link UserRepository#findUserEntityByUserName(String)}, {@link UserRepository#save(Object)}
+     */
     @Override
     public void setPassword(NewPassword newPass, Authentication authentication) {
         log.info("Запущен метод сервиса {}", LoggingMethodImpl.getMethodName());
@@ -64,7 +75,11 @@ public class UserServiceImpl implements UserService {
         userRepository.save(userEntity);
     }
 
-
+    /**
+     * Метод сервиса для получения пользователя.
+     * Используется метод репозитория {@link UserRepository#findUserEntityByUserName(String)}
+     * @return {@link UserEntity}
+     */
     @Transactional
     @Override
     public UserEntity getUser(String username) {
@@ -76,7 +91,11 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-
+    /**
+     * Метод сервиса для обновления данных пользователя.
+     * Используется методы репозитория {@link UserRepository#findUserEntityByUserName(String)}, {@link UserRepository#save(Object)}
+     * @return {@link UserEntity}
+     */
     @Transactional
     @Override
     public UserEntity updateUser(UpdateUser updateUser, Authentication authentication) {
@@ -94,6 +113,11 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    /**
+     * Метод сервиса для обновления изображения пользователя.
+     * Используется методы репозитория {@link UserRepository#findUserEntityByUserName(String)}, {@link UserRepository#save(Object)}
+     * и сервиса {@link ImageService#updateEntitiesPhoto(MultipartFile, ModelEntity)}
+     */
     @Transactional
     @Override
     public void updateUserImage(MultipartFile image, Authentication authentication) throws IOException {

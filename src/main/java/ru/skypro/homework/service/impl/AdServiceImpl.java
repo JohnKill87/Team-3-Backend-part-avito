@@ -12,17 +12,23 @@ import ru.skypro.homework.dto.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ExtendedAd;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.model.AdEntity;
+import ru.skypro.homework.model.ModelEntity;
 import ru.skypro.homework.model.UserEntity;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.repository.PhotoRepository;
 import ru.skypro.homework.service.AdService;
 import ru.skypro.homework.service.UserService;
+import ru.skypro.homework.service.ImageService;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
+
+/**
+ * Реализация сервиса {@link AdService} для работы с объявлениями.
+ */
 @Slf4j
 @Service
 @Transactional
@@ -49,7 +55,11 @@ public class AdServiceImpl implements AdService {
         this.userService = userService;
     }
 
-
+    /**
+     * Метод сервиса для получения DTO списка всех объявлений.
+     * Используется метод репозитория {@link AdRepository#findAll()} и маппера {@link AdMapper#mapToAdDto(AdEntity)}
+     * @return {@link Ads}
+     */
     @Override
     public Ads getAllAds() {
         List<Ad> dtos = adRepository.findAll().stream()
@@ -58,7 +68,12 @@ public class AdServiceImpl implements AdService {
         return new Ads(dtos.size(), dtos);
     }
 
-
+    /**
+     * Метод сервиса для создания нового объявления в форме DTO с параметрами и изображением.
+     * Используется метод сервиса {@link UserService#getUser(String)}, {@link ImageService#updateEntitiesPhoto(MultipartFile, ModelEntity)},
+     * репозитория {@link AdRepository#save(Object)} и маппера {@link AdMapper#mapToAdDto(AdEntity)}
+     * @return {@link Ad}
+     */
     @Override
     public Ad addAd(CreateOrUpdateAd properties,
                     MultipartFile image,
@@ -85,7 +100,11 @@ public class AdServiceImpl implements AdService {
         return adMapper.mapToAdDto(adEntity);
     }
 
-
+    /**
+     * Метод сервиса для получения DTO объявления.
+     * Используется метод репозитория {@link AdRepository#findById(Object)} и маппера {@link AdMapper#mapToExtendedAdDto(AdEntity)}
+     * @return {@link ExtendedAd}
+     */
     @Override
     public ExtendedAd getAds(Integer id) {
         log.info("Запущен метод сервиса {}", LoggingMethodImpl.getMethodName());
@@ -93,7 +112,11 @@ public class AdServiceImpl implements AdService {
         return adMapper.mapToExtendedAdDto(entity);
     }
 
-
+    /**
+     * Метод сервиса для удаления объявления по id.
+     * Используется методы репозитория {@link AdRepository#findById(Object)}, {@link AdRepository#delete(Object)}, {@link PhotoRepository#delete(Object)}
+     * @return {@link Boolean}
+     */
     @Transactional
     @Override
     public boolean removeAd(Integer id) throws IOException {
@@ -116,7 +139,12 @@ public class AdServiceImpl implements AdService {
         }
     }
 
-
+    /**
+     * Метод сервиса для обновления DTO объявления.
+     * Используется методы репозитория {@link AdRepository#findById(Object)}, {@link AdRepository#save(Object)}
+     * и маппера {@link AdMapper#mapToAdDto(AdEntity)}
+     * @return {@link Ad}
+     */
     @Transactional
     @Override
     public Ad updateAds(Integer id, CreateOrUpdateAd dto) {
@@ -131,7 +159,12 @@ public class AdServiceImpl implements AdService {
         return adMapper.mapToAdDto(entity);
     }
 
-
+    /**
+     * Метод сервиса для получения DTO объявления пользователя.
+     * Используется метод сервиса {@link UserService#getUser(String)}, репозитория {@link AdRepository#findByAuthor(UserEntity)}
+     * и маппера {@link AdMapper#mapToAdDto(AdEntity)}
+     * @return {@link Ads}
+     */
     @Override
     @Transactional
     public Ads getAdsMe(String username) {
@@ -148,6 +181,11 @@ public class AdServiceImpl implements AdService {
         return adsDto;
     }
 
+    /**
+     * Метод сервиса для обновления изображения объявления.
+     * Используется методы репозитория {@link AdRepository#findById(Object)}, {@link AdRepository#save(Object)}
+     * и сервиса {@link ImageService#updateEntitiesPhoto(MultipartFile, ModelEntity)}
+     */
     @Transactional
     @Override
     public void updateImage(Integer id, MultipartFile image) throws IOException {
@@ -161,6 +199,11 @@ public class AdServiceImpl implements AdService {
         adRepository.save(adEntity);
     }
 
+    /**
+     * Метод сервиса для получения автора объявления.
+     * Используется метод репозитория {@link AdRepository#findById(Object)}
+     * @return {@link Boolean}
+     */
     public boolean isAuthorAd(String username, Integer adId) {
         log.info("Использован метод сервиса: {}", LoggingMethodImpl.getMethodName());
 

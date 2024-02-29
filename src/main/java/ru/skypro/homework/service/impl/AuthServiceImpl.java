@@ -2,17 +2,25 @@ package ru.skypro.homework.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.skypro.homework.dto.Ads;
 import ru.skypro.homework.dto.Register;
 import ru.skypro.homework.exception.UserAlredyExsistException;
 import ru.skypro.homework.exception.WrongPasswordException;
+import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.mapper.UserMapper;
+import ru.skypro.homework.model.AdEntity;
 import ru.skypro.homework.model.UserEntity;
+import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.AuthService;
 
+/**
+ * Реализация сервиса {@link AuthService} для аутентификации пользователей.
+ */
 @Service
 @Slf4j
 public class AuthServiceImpl implements AuthService {
@@ -29,7 +37,11 @@ public class AuthServiceImpl implements AuthService {
         this.myUserDetailService = myUserDetailService;
     }
 
-
+    /**
+     * Метод сервиса для аутентификации пользователей по логину и паролю которые содержатся в БД.
+     * Используется метод сервиса {@link MyUserDetailService#loadUserByUsername(String)}
+     * @return {@link Boolean}
+     */
     @Override
     public boolean login(String userName, String password) {
         log.info("Запущен метод сервиса {}", LoggingMethodImpl.getMethodName());
@@ -40,7 +52,12 @@ public class AuthServiceImpl implements AuthService {
         return true;
     }
 
-
+    /**
+     * Метод сервиса для регистрации пользователей и сохранения их в БД.
+     * Используется методы репозитория {@link UserRepository#findUserEntityByUserName(String)}, {@link UserRepository#save(Object)}
+     * и маппер {@link UserMapper#mapFromRegisterToUserEntity(Register)}
+     * @return {@link Boolean}
+     */
     @Override
     public boolean register(Register register) {
         log.info("Запущен метод сервиса {}", LoggingMethodImpl.getMethodName());

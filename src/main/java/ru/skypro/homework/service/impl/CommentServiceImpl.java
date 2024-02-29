@@ -15,11 +15,15 @@ import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.CommentService;
+import ru.skypro.homework.service.UserService;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Реализация сервиса {@link CommentService} для работы с комментариями.
+ */
 @Service
 @Slf4j
 public class CommentServiceImpl implements CommentService {
@@ -42,7 +46,11 @@ public class CommentServiceImpl implements CommentService {
         this.userService = userService;
     }
 
-
+    /**
+     * Метод сервиса для получения DTO списка комментариев.
+     * Используется метод репозитория {@link CommentRepository#findById(Object)} и маппер {@link CommentMapper#mapToCommentDto(CommentEntity)}
+     * @return {@link Comments}
+     */
     @Transactional
     @Override
     public Comments getComments(Integer id) {
@@ -54,7 +62,13 @@ public class CommentServiceImpl implements CommentService {
         return new Comments(comments.size(), comments);
     }
 
-
+    /**
+     * Метод сервиса для создания нового комментария в форме DTO с параметрами и изображением.
+     * Используется методы репозитория {@link AdRepository#findById(Object)}, {@link CommentRepository#save(Object)}, {@link UserRepository#save(Object)},
+     * {@link CommentRepository#findFirstByText(String)}, сервиса {@link UserService#getUser(String)}
+     * и маппер {@link CommentMapper#mapToCommentDto(CommentEntity)}
+     * @return {@link Comment}
+     */
     @Transactional
     @Override
     public Comment addComment(Integer id, CreateOrUpdateComment createOrUpdateComment, String username) {
@@ -94,7 +108,12 @@ public class CommentServiceImpl implements CommentService {
         return commentDTO;
     }
 
-
+    /**
+     * Метод сервиса для удаления комментария.
+     * Используется методы репозитория {@link CommentRepository#findById(Object)}, {@link CommentRepository#delete(Object)},
+     * сервиса {@link UserService#getUser(String)}, и маппер {@link CommentMapper#mapToCommentDto(CommentEntity)}
+     * @return {@link String}
+     */
     @Override
     public String deleteComment(Integer commentId, String username) {
         log.info("Запущен метод сервиса {}", LoggingMethodImpl.getMethodName());
@@ -116,7 +135,12 @@ public class CommentServiceImpl implements CommentService {
         return "not found"; //'404' Comment not found
     }
 
-
+    /**
+     * Метод сервиса для обновления комментария.
+     * Используется методы репозитория {@link CommentRepository#findById(Object)}, {@link CommentRepository#save(Object)},
+     * сервиса {@link UserService#getUser(String)}, и маппер {@link CommentMapper#mapToCommentDto(CommentEntity)}
+     * @return {@link Comment}
+     */
     @Transactional
     @Override
     public Comment updateComment(Integer commentId, CreateOrUpdateComment createOrUpdateComment, String username) {

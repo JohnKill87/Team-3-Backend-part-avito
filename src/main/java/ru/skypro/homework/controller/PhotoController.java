@@ -1,7 +1,12 @@
 package ru.skypro.homework.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.skypro.homework.service.impl.LoggingMethodImpl;
@@ -17,7 +22,17 @@ import java.io.IOException;
 public class PhotoController {
     private final PhotoServiceImpl photoService;
 
-
+    @Operation(
+            tags = "Фото",
+            summary = "Получение фото",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "OK",
+                            content = @Content()
+                    )
+            }
+    )
     @GetMapping("/image/{photoId}")
     public ResponseEntity<byte[]> getPhotoFromSource(@PathVariable Integer photoId) throws IOException {
         log.info("Запущен метод контроллера {}", LoggingMethodImpl.getMethodName());

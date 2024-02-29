@@ -4,18 +4,28 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.dto.Comments;
+import ru.skypro.homework.mapper.CommentMapper;
 import ru.skypro.homework.mapper.UserMapper;
+import ru.skypro.homework.model.CommentEntity;
 import ru.skypro.homework.model.ModelEntity;
 import ru.skypro.homework.model.PhotoEntity;
+import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.repository.PhotoRepository;
 import ru.skypro.homework.service.ImageService;
+import ru.skypro.homework.service.UserService;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.lang.reflect.Array;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
+
+/**
+ * Реализация сервиса {@link ImageService} для работы с Изображениями.
+ */
 @Service
 @Slf4j
 public class ImageServiceImpl implements ImageService {
@@ -31,6 +41,12 @@ public class ImageServiceImpl implements ImageService {
         this.userMapper = userMapper;
     }
 
+    /**
+     * Метод сервиса для добавления и сохранения изображения.
+     * Используется методы репозитория {@link PhotoRepository#delete(Object)}, {@link PhotoRepository#save(Object)}
+     * и маппер {@link UserMapper#mapMuptipartFileToPhoto(MultipartFile)}
+     * @return {@link ModelEntity}
+     */
     @Override
     public ModelEntity updateEntitiesPhoto(MultipartFile image, ModelEntity entity) throws IOException {
         //если у сущности уже есть картинка, то нужно ее удалить
@@ -61,7 +77,10 @@ public class ImageServiceImpl implements ImageService {
         return entity;
     }
 
-
+    /**
+     * Метод сервиса для сохранения изображения на диске.
+     * @return {@link Boolean}
+     */
     @Override
     public boolean saveFileOnDisk(MultipartFile image, Path filePath) throws IOException {
         log.info("Запущен метод сервиса {}", LoggingMethodImpl.getMethodName());
@@ -77,6 +96,10 @@ public class ImageServiceImpl implements ImageService {
         return true;
     }
 
+    /**
+     * Метод сервиса для получения изображения с диска.
+     * @return {@link Array} of {@link Byte}
+     */
     public byte[] getPhotoFromDisk(PhotoEntity photo) {
         Path path1 = Path.of(photo.getFilePath());
         try {
@@ -89,6 +112,10 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
+    /**
+     * Дополнительный метод для получения расширения файла из его названия.
+     * @return {@link String}
+     */
     @Override
     public String getExtension(String fileName) {
         log.info("Запущен метод сервиса {}", LoggingMethodImpl.getMethodName());
