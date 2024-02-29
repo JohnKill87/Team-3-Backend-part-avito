@@ -1,10 +1,5 @@
 package ru.skypro.homework.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,131 +7,160 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.homework.dto.AdDto;
-import ru.skypro.homework.dto.AdsDto;
-import ru.skypro.homework.dto.CreateOrUpdateAd;
-import ru.skypro.homework.dto.ExtendedAd;
+import ru.skypro.homework.dto.*;
+import ru.skypro.homework.exception.NonExistentCommentException;
+import ru.skypro.homework.mapper.AdMapper;
+import ru.skypro.homework.model.Ad;
+import ru.skypro.homework.model.User;
 import ru.skypro.homework.service.AdService;
+import ru.skypro.homework.service.UserService;
+
+import java.util.Optional;
 
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
-@RequestMapping("ads")
+@RequestMapping("/ads")
 @RequiredArgsConstructor
 public class AdController {
 
     private final AdService adService;
+    private final UserService userService;
+    private final AdMapper adMapper;
 
-    @Operation(
-            summary = "Adding an ad",
-            responses = {
-                    @ApiResponse(responseCode = "201", description = "Created",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = AdDto.class))),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
-            }
-    )
-    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<AdDto> createAd(@RequestPart(value = "properties") CreateOrUpdateAd createOrUpdateAdDto,
-                                          @RequestPart(value = "image") MultipartFile image,
-                                          Authentication authentication) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(adService.createAd(createOrUpdateAdDto, image, authentication));
+    @GetMapping("")
+    public ResponseEntity<ResponseWrapperAds> getAllAds() {
+        return ResponseEntity.ok(adMapper.mapAdsListToResponseWrapperAds(adService.findAll()));
     }
 
-    @Operation(
-            summary = "Receiving all ads",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = AdsDto.class)))
-            }
-    )
-    @GetMapping
-    public ResponseEntity<AdsDto> getAllAds() {
-        return ResponseEntity.ok(adService.getAll());
+    /**
+     * Return ad with target {@code adId}
+     * @param adId variable from URL
+     * @return {@link HttpStatus#OK} with ad with {@code adId} in {@link FullAdDto} instance if existed, <br>
+     * {@link HttpStatus#NOT_FOUND} if not existed
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<FullAdDto> getFullAdById(@PathVariable("id") int adId) {
+        Optional<Ad> targetAdOpt = adService.findById(adId);
+        return targetAdOpt.map(ad -> ResponseEntity.ok(adService.createFullAd(ad)))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    @Operation(
-            summary = "Getting information about an ad",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ExtendedAd.class))),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-                    @ApiResponse(responseCode = "404", description = "Not found", content = @Content)
-            }
-    )
-    @GetMapping("{id}")
-    public ResponseEntity<ExtendedAd> getInfoAboutAd(@PathVariable Integer id) {
-        return ResponseEntity.ok(adService.getInfoAboutAd(id));
+    /**
+     * Return ads of authorized user
+     * @param authentication (inject) authorized user authentication info
+     * @return {@link HttpStatus#OK} with all ads of authorized user in {@link ResponseWrapperAds} instance
+     */
+    @GetMapping("/me")
+    public ResponseEntity<ResponseWrapperAds> getMyAds(Authentication authentication) {
+        User author = userService.findUserByEmail(authentication.getName());
+        return ResponseEntity.ok(adMapper.mapAdsListToResponseWrapperAds(author.getAds()));
     }
 
-    @Operation(
-            summary = "Receiving ads from an authorized user",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = AdsDto.class))),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
-            }
-    )
-    @GetMapping("me")
-    public ResponseEntity<AdsDto> getMyAds(Authentication authentication) {
-        return ResponseEntity.ok(adService.getMyAds(authentication));
+    /**
+     * Create new ad
+     * @param authentication (inject) authorized user authentication info
+     * @param image {@link MultipartFile} with image
+     * @param createAdsDto new ad info
+     * @return {@link HttpStatus#OK} with added ad in {@link AdDto} instance
+     */
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<AdDto> postAd(
+            Authentication authentication,
+            @RequestPart("image") MultipartFile image,
+            @RequestPart("properties") CreateAdDto createAdsDto)
+    {
+        return ResponseEntity.ok(adService.createAd(authentication.getName(), image, createAdsDto));
     }
 
-    @GetMapping(value = "{id}/image", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
-    public ResponseEntity<byte[]> getImage(@PathVariable Integer id) {
-        return ResponseEntity.ok(adService.getImage(id));
+    /**
+     * Edit ad with target {@code adId}
+     * @param authentication (inject) authorized user authentication info
+     * @param adId variable from URL
+     * @param createAdDto new ad info
+     * @return {@link HttpStatus#OK} with edited ad in AdDto instance if target ad existed
+     * and initiator is admin or author, <br>
+     * {@link HttpStatus#NOT_FOUND} if target ad not existed, <br>
+     * {@link HttpStatus#FORBIDDEN} if initiator not admin and not author
+     */
+    @PatchMapping("/{id}")
+    public ResponseEntity<AdDto> editAd(
+            Authentication authentication,
+            @PathVariable("id") int adId,
+            @RequestBody CreateAdDto createAdDto)
+    {
+        Optional<Ad> targetAdOpt = adService.findById(adId);
+        if (targetAdOpt.isPresent()) {
+            if (isUserAdminOrAuthor(authentication.getName(), targetAdOpt)) {
+                return ResponseEntity.ok(adService.editAd(targetAdOpt.get(), createAdDto));
+            }
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    @Operation(
-            summary = "Updating ad information",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = AdDto.class))),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-                    @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content),
-                    @ApiResponse(responseCode = "404", description = "Not found", content = @Content)
+    /**
+     * Edit image of ad with target {@code adId}
+     * @param authentication (inject) authorized user authentication info
+     * @param adId variable from URL
+     * @param imageFile {@link MultipartFile} with new image
+     * @return {@link HttpStatus#OK} with edited ad if target ad existed and initiator is admin or author, <br>
+     * {@link HttpStatus#NOT_FOUND} if target ad not existed, <br>
+     * {@link HttpStatus#FORBIDDEN} if initiator not admin and not author
+     */
+    @PatchMapping(value = "/{id}/image",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<?> editAdImage(
+            Authentication authentication,
+            @PathVariable("id") int adId,
+            @RequestPart("image") MultipartFile imageFile)
+    {
+        Optional<Ad> targetAdOpt = adService.findById(adId);
+        if (targetAdOpt.isPresent()) {
+            if (isUserAdminOrAuthor(authentication.getName(), targetAdOpt)) {
+                return ResponseEntity.ok().body(adService.editAdImage(targetAdOpt.get(), imageFile));
             }
-    )
-    @PatchMapping("{id}")
-    public ResponseEntity<AdDto> updateAd(@PathVariable Integer id,
-                                          @RequestBody CreateOrUpdateAd createOrUpdateAdDto,
-                                          Authentication authentication) {
-        return ResponseEntity.ok(adService.updateAd(id, createOrUpdateAdDto, authentication));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    @Operation(
-            summary = "Update ad picture",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = byte[].class))),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-                    @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content),
-                    @ApiResponse(responseCode = "404", description = "Not found", content = @Content)
+    /**
+     * Delete ad with target {@code adId}
+     * @param authentication (inject) authorized user authentication info
+     * @param adId variable from URL
+     * @return {@link HttpStatus#OK} if target ad existed and initiator is admin or author, <br>
+     * {@link HttpStatus#NOT_FOUND} if target ad not existed, <br>
+     * {@link HttpStatus#FORBIDDEN} if initiator not admin and not author
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteAdById(
+            Authentication authentication,
+            @PathVariable("id") int adId)
+    {
+        Optional<Ad> targetAdOpt = adService.findById(adId);
+        if (targetAdOpt.isPresent()) {
+            if (isUserAdminOrAuthor(authentication.getName(), targetAdOpt)){
+                adService.deleteById(adId);
+                return ResponseEntity.ok().build();
             }
-    )
-    @PatchMapping(value = "{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
-    public ResponseEntity<byte[]> updateAdImage(@PathVariable Integer id,
-                                                @RequestParam MultipartFile image,
-                                                Authentication authentication) {
-        return ResponseEntity.ok(adService.updateAdImage(id, image, authentication));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    @Operation(
-            summary = "Remove ad",
-            responses = {
-                    @ApiResponse(responseCode = "204", description = "No content", content = @Content),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-                    @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content),
-                    @ApiResponse(responseCode = "404", description = "Not Found", content = @Content)
-            }
-    )
-    @DeleteMapping("{id}")
-    public ResponseEntity<?> deleteAd(@PathVariable Integer id, Authentication authentication) {
-        adService.deleteAd(id, authentication);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
+    /**
+     * Check that user is admin or ad's author
+     * @param targetEmail target user email
+     * @param targetAdOpt target ad (Optional)
+     * @return {@code true} if user with {@code targetEmail} is admin or author of {@code targetAd}, <br>
+     * {@code false} if not
+     */
+    private boolean isUserAdminOrAuthor(String targetEmail, Optional<Ad> targetAdOpt) {
+        User initiator = userService.findUserByEmail(targetEmail);
+        return initiator.getRole() == Role.ADMIN
+                || initiator.getEmail()
+                .equals(targetAdOpt.orElseThrow(NonExistentCommentException::new).getAuthor().getEmail());
     }
 }

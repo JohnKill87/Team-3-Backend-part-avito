@@ -7,11 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AdDto {
+public class CreateAdDto {
 
-    private Integer author;
-    private String image;
-    private Integer pk;
+    private String description;
     private Integer price;
     private String title;
+
 }

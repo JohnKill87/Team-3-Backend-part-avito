@@ -1,11 +1,47 @@
 package ru.skypro.homework.service;
 
-import ru.skypro.homework.dto.NewPassword;
-import ru.skypro.homework.dto.Register;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import ru.skypro.homework.dto.RegisterReq;
+import ru.skypro.homework.dto.Role;
 
-import java.util.Optional;
+@Service
+@RequiredArgsConstructor
+public class AuthService {
 
-public interface AuthService {
-    boolean login(String userName, String password);
-    boolean register(Register register);
+    private final PasswordEncoder encoder;
+    private final UserService userService;
+    private final UserDetailService userDetailService;
+
+    //-----------------API START-----------------
+
+    /**
+     * Login user by auth data
+     * @param userName user's username (email)
+     * @param password user's password
+     * @return {@code true} if user with this {@code userName} is existed and
+     * {@code password} is correct, <br>
+     * {@code false} otherwise
+     */
+    public boolean login(String userName, String password) {
+        UserDetails userDetails = userDetailService.loadUserByUsername(userName);
+        return encoder.matches(password, userDetails.getPassword());
+    }
+
+    /**
+     * Register new user
+     * @param registerReq object with new user's data
+     * @param role role of new user
+     * @return {@code true} if new user successfully registered, <br>
+     * {@code false} if user with this username is already exist
+     */
+    public boolean register(RegisterReq registerReq, Role role) {
+        if (userService.findUserByEmail(registerReq.getUsername()) == null) {
+            userService.saveUserFromRegReq(registerReq, role, encoder.encode(registerReq.getPassword()));
+            return true;
+        }
+        return false;
+    }
 }

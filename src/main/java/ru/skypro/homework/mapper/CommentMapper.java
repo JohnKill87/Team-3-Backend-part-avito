@@ -1,50 +1,47 @@
 package ru.skypro.homework.mapper;
 
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.skypro.homework.dto.Comment;
-import ru.skypro.homework.dto.Comments;
-import ru.skypro.homework.dto.CreateOrUpdateComment;
-import ru.skypro.homework.model.CommentEntity;
+import ru.skypro.homework.dto.FullCommentDto;
+import ru.skypro.homework.dto.ResponseWrapperComment;
+import ru.skypro.homework.model.Comment;
+import ru.skypro.homework.model.User;
 
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class CommentMapper {
 
-    public CommentEntity toEntity(CreateOrUpdateComment createOrUpdateCommentDto) {
-        CommentEntity commentEntity = new CommentEntity();
-
-        commentEntity.setText(createOrUpdateCommentDto.getText());
-        commentEntity.setCreatedAt(new Timestamp(System.currentTimeMillis()).getTime());
-
-        return commentEntity;
-    }
-
-    public Comment toCommentDto(CommentEntity commentEntity) {
-        Comment comment = new Comment();
-
-        comment.setPk(commentEntity.getPk());
-        comment.setAuthor(commentEntity.getUser().getId());
-        comment.setAuthorImage(commentEntity.getUser().getAvatar());
-        comment.setAuthorFirstName(commentEntity.getUser().getFirstName());
-        comment.setCreatedAt(commentEntity.getCreatedAt());
-        comment.setText(commentEntity.getText());
-
-        return comment;
-    }
-
-    public Comments toCommentsDto(List<CommentEntity> comments) {
-        Comments commentsDto = new Comments();
-        List<Comment> commentDtoList = comments.stream()
-                .map(this::toCommentDto)
+    /**
+     * Map {@link List} of {@link Comment} to {@link ResponseWrapperComment}
+     *
+     * @param comments target {@link List} of {@link Comment}
+     * @return created {@link ResponseWrapperComment}
+     */
+    public ResponseWrapperComment mapCommentListToWrapper(List<Comment> comments) {
+        List<FullCommentDto> collect = comments.stream().map(this::mapCommentToFullCommentDto)
                 .collect(Collectors.toList());
+        return new ResponseWrapperComment(collect.size(), collect);
+    }
 
-        commentsDto.setCount(commentDtoList.size());
-        commentsDto.setResult(commentDtoList);
-
-        return commentsDto;
+    /**
+     * Map {@link Comment} to {@link FullCommentDto}
+     *
+     * @param comment target {@link Comment}
+     * @return created {@link FullCommentDto}
+     */
+    public FullCommentDto mapCommentToFullCommentDto(Comment comment) {
+        User author = comment.getAuthor();
+        return new FullCommentDto(
+                author.getUserId(),
+                author.getImage(),
+                author.getFirstName(),
+                comment.getCreatingTime(),
+                comment.getId(),
+                comment.getText()
+        );
     }
 }

@@ -2,10 +2,11 @@ package ru.skypro.homework.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ru.skypro.homework.model.AdEntity;
+import ru.skypro.homework.model.Ad;
 
 import java.util.List;
 @Repository
-public interface AdRepository extends JpaRepository<AdEntity, Integer> {
-    List<AdEntity> findAllByUserIdOrderByPk(Integer userId);
+public interface AdRepository extends JpaRepository<Ad, Integer> {
+
+    List<Ad> findAllByAuthor(int author);
 }

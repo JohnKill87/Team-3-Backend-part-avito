@@ -4,14 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AdDto {
+public class UserDto {
 
-    private Integer author;
+    private Integer id;
+    private String email;
+    private String firstName;
+    private String lastName;
+    private String phone;
     private String image;
-    private Integer pk;
-    private Integer price;
-    private String title;
 }
