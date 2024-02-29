@@ -1,79 +1,38 @@
 package ru.skypro.homework.model;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import ru.skypro.homework.dto.User;
 
 import javax.persistence.*;
+import java.util.Collection;
 
 @Entity
-@Table(name = "ads")
-@Setter
+@Data
 @Getter
-public class AdEntity {
-
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "ads")
+public class AdEntity extends ModelEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
-    @JoinColumn(name = "user_id")
-    @ManyToOne
-    private UserEntity author;
-
-    private String image;
-
+    private Integer id;
+    @Column(nullable = false)
     private String title;
-
+    @Column(nullable = false)
+    private Integer price;
+    @Column(nullable = false, length = 250)
     private String description;
 
-    private int price;
+    @OneToOne
+    private PhotoEntity photo;
 
-    public int getId() {
-        return id;
-    }
+    @ManyToOne
+    @JoinColumn(name = "author_id", nullable = false)
+    private UserEntity author;
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    @OneToMany(mappedBy = "ad", cascade = CascadeType.ALL)
+    private Collection<CommentEntity> comments;
 
-    public UserEntity getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(UserEntity author) {
-        this.author = author;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
-    }
+    private String filePath; //путь на ПК
 }

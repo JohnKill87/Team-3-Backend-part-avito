@@ -7,8 +7,8 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class Comments {
+public class Ads {
 
     private int count;
-    private List<Comment> results;
+    private List<Ad> results;
 }

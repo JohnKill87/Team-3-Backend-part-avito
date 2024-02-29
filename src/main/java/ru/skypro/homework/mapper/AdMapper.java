@@ -1,73 +1,77 @@
 package ru.skypro.homework.mapper;
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.skypro.homework.dto.AdDto;
-import ru.skypro.homework.dto.AdsDto;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.constants.Constants;
+import ru.skypro.homework.dto.Ad;
+import ru.skypro.homework.dto.Ads;
 import ru.skypro.homework.dto.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ExtendedAd;
+import ru.skypro.homework.exception.UserNotFoundException;
 import ru.skypro.homework.model.AdEntity;
+import ru.skypro.homework.model.PhotoEntity;
 import ru.skypro.homework.model.UserEntity;
+import ru.skypro.homework.repository.PhotoRepository;
+import ru.skypro.homework.repository.UserRepository;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
+@Service
+@AllArgsConstructor
 public class AdMapper {
 
-    //    Из Entity в DTO
-    public AdDto mapToAdDTO(AdEntity adEntity) {
-        AdDto adDto = new AdDto();
-        adDto.setPk(adEntity.getId());
-        adDto.setAuthor(adEntity.getAuthor().getId());
-        adDto.setTitle(adEntity.getTitle());
-        adDto.setPrice(adEntity.getPrice());
-        adDto.setImage(adEntity.getImage());
-        return adDto;
+    private final UserRepository userRepository;
+    private final PhotoRepository photoRepository;
+
+    public Ad mapToAdDto(AdEntity entity) {
+        Ad dto = new Ad();
+        dto.setAuthor(entity.getAuthor().getId());
+        dto.setImage(Constants.URL_PHOTO_CONSTANT + entity.getPhoto().getId());
+        dto.setPk(entity.getId());
+        dto.setPrice(entity.getPrice());
+        dto.setTitle(entity.getTitle());
+        return dto;
     }
 
-    public ExtendedAd mapToExtendedAdDTO(AdEntity adEntity) {
-        ExtendedAd extendedAd = new ExtendedAd();
-        extendedAd.setPk(adEntity.getId());
-        extendedAd.setAuthorFirstName(adEntity.getAuthor().getFirstName());
-        extendedAd.setAuthorLastName(adEntity.getAuthor().getLastName());
-        extendedAd.setDescription(adEntity.getDescription());
-        extendedAd.setEmail(adEntity.getAuthor().getEmail());
-        extendedAd.setImage(adEntity.getImage());
-        extendedAd.setPhone(adEntity.getAuthor().getPhone());
-        extendedAd.setPrice(adEntity.getPrice());
-        extendedAd.setTitle(adEntity.getTitle());
-        return extendedAd;
+
+    public AdEntity mapToAdEntity(CreateOrUpdateAd dto, String username) {
+        UserEntity author = userRepository.findUserEntityByUserName(username);
+        if (author == null) {
+            throw new UserNotFoundException("User not found");
+        }
+        AdEntity entity = new AdEntity();
+        entity.setTitle(dto.getTitle());
+        entity.setDescription(dto.getDescription());
+        entity.setPrice(dto.getPrice());
+        entity.setAuthor(author);
+        return entity;
     }
 
-    public AdEntity mapCreatedOrUpdatedAd(CreateOrUpdateAd createOrUpdateAd) {
-        AdEntity adEntity = new AdEntity();
-        adEntity.setTitle(createOrUpdateAd.getTitle());
-        adEntity.setDescription(createOrUpdateAd.getDescription());
-        adEntity.setPrice(createOrUpdateAd.getPrice());
-        return adEntity;
+
+    public ExtendedAd mapToExtendedAdDto(AdEntity entity) {
+        ExtendedAd dto = new ExtendedAd();
+        dto.setPk(entity.getId());
+        dto.setAuthorFirstName(entity.getAuthor().getFirstName());
+        dto.setAuthorLastName(entity.getAuthor().getLastName());
+        dto.setDescription(entity.getDescription());
+        dto.setEmail(entity.getAuthor().getUserName());
+        dto.setImage(Constants.URL_PHOTO_CONSTANT + entity.getPhoto().getId());
+        dto.setPhone(entity.getAuthor().getPhone());
+        dto.setPrice(entity.getPrice());
+        dto.setTitle(entity.getTitle());
+        return dto;
     }
 
-    public AdsDto adsMap(Collection<AdEntity> ads) {
-        AdsDto result = new AdsDto();
-        result.setResults(
-                ads.stream()
-                        .map(this::mapToAdDTO)
-                        .collect(Collectors.toList())
-        );
-        result.setCount(ads.size());
-        return result;
-    }
 
-    //    Из DTO в Entity
-    public AdEntity mapToAdEntity(AdDto adDto) {
-        AdEntity adEntity = new AdEntity();
-        adEntity.setId(adDto.getPk());
-        adEntity.getAuthor().setId(adDto.getAuthor());
-        adEntity.setTitle(adDto.getTitle());
-        adEntity.setPrice(adDto.getPrice());
-        adEntity.setImage(adDto.getImage());
-        return adEntity;
+    public PhotoEntity mapMultipartFileToPhoto(MultipartFile image) throws IOException {
+        PhotoEntity photo = new PhotoEntity();
+        photo.setData(image.getBytes());
+        photo.setMediaType(image.getContentType());
+        photo.setFileSize(image.getSize());
+        return photo;
     }
 }

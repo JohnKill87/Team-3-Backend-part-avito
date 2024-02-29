@@ -8,12 +8,8 @@ import javax.validation.constraints.Size;
 
 @Data
 public class NewPassword {
-    @Size(min = 8,max = 16)
-    @Schema(description = "Текущий пароль")
+
     private String currentPassword;
-
-    @Size(min = 8,max = 16)
-    @Schema(description = "Новый пароль")
     private String newPassword;
-
 }
+

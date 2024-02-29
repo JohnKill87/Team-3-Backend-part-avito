@@ -5,16 +5,13 @@ import ru.skypro.homework.model.AdEntity;
 import ru.skypro.homework.model.UserEntity;
 
 @Data
-
 public class Comment {
 
-    private Integer id;
-
+    private Integer author;
+    private String authorImage;
+    private String authorFirstName;
+    private Long createdAt;
+    private Integer pk;
     private String text;
 
-    private Long createdAT;
-
-    private UserEntity author;
-
-    private AdEntity ad;
 }
