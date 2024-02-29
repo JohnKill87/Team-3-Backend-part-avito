@@ -18,7 +18,6 @@
 * Spring Boot
 * Docker
 * Lombok
-* Mapstruct
 * H2
 * Maven
 * Hibernate
