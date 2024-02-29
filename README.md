@@ -22,6 +22,7 @@
 * H2
 * Maven
 * Hibernate
+* Spring Security
 ## Проект разработали:
 1. Янкин Илья (https://github.com/JohnKill87)
 2. Ворожейкин Роман (https://github.com/RomanVorozheikin)
