@@ -1,25 +1,28 @@
 package ru.skypro.homework.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "comments")
-@Setter
+@Data
 @Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "comments")
 public class CommentEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id; // id комментария
-    private String text; // текст комментария
-    private Long createdAT; // дата и время создания комментария
-    @JoinColumn(name = "user_id")
-    @ManyToOne
-    private UserEntity author; // автор комментария
-    @ManyToOne
-    private AdEntity ad; // объявление, к которому прикреплен комментарий
+    private Integer id;
+    private String text;
+    private Long createdAt;
 
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    private UserEntity author;
+
+    @ManyToOne
+    @JoinColumn(name = "ad_id")
+    private AdEntity ad;
 }
